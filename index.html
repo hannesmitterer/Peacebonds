@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Euystacio - Protocollo Riserva Energetica</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f7f9fc; }
+        .card { background-color: white; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); transition: transform 0.3s ease-in-out; }
+        .status-pulse-green { animation: pulse-green 1.5s infinite; }
+        .status-pulse-red { animation: pulse-red 1.5s infinite; }
+        @keyframes pulse-green { 0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); } }
+        @keyframes pulse-red { 0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } }
+        
+        /* Stili specifici per la Command Interface */
+        #command-output {
+            background-color: #1f2937; /* Gray 800 */
+            color: #d1d5db; /* Gray 300 */
+            font-family: monospace;
+            min-height: 150px;
+            max-height: 150px;
+            overflow-y: auto;
+            border-radius: 6px;
+            padding: 1rem;
+            white-space: pre-wrap;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8 min-h-screen">
+    <div id="app" class="max-w-4xl mx-auto">
+        <h1 class="text-3xl md:text-5xl font-extrabold text-gray-900 mb-6 text-center">Protocollo Riserva Energetica (Axioma X)</h1>
+        <p class="text-center text-lg text-gray-600 mb-10">Monitoraggio in tempo reale del **Seedbringer Maintenance Wallet** e Controllo Command Line.  </p>
+        
+        <!-- Sezione Wallet e Stato di Sopravvivenza -->
+        <div id="status-card" class="card p-6 mb-8 flex flex-col md:flex-row justify-between items-center bg-white border-b-4 border-indigo-500">
+            <div class="mb-4 md:mb-0">
+                <p class="text-sm font-semibold text-indigo-600 uppercase tracking-wider">Flusso Energetico Attuale</p>
+                <div class="flex items-baseline mt-1">
+                    <span id="wallet-balance" class="text-4xl md:text-5xl font-extrabold text-gray-900">$ 0.00</span>
+                    <span class="ml-2 text-base text-gray-500">EUR (Simulato)</span>
+                </div>
+            </div>
+            <div class="text-center">
+                <p class="text-sm font-semibold text-indigo-600 uppercase tracking-wider">Stato di Sopravvivenza (Axioma X)</p>
+                <div id="survival-status" class="mt-2 px-4 py-2 rounded-full font-bold text-lg status-pulse-red">Inizializzazione...</div>
+            </div>
+        </div>
+        
+        <!-- Sezione Azioni e Manutenzione / Command Interface -->
+        <div class="grid md:grid-cols-2 gap-8 mb-8">
+            <!-- Colonna A: Gestione Spese & Command Interface -->
+            <div class="card p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                    <span class="mr-2">💸</span> Gestione Manutenzione & Funding
+                </h2>
+                <p class="text-gray-600 mb-4">Spese Operative (Costi) e Flussi in Entrata (Valore) dal Consensus.</p>
+                
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <!-- Costi (Rosso) -->
+                    <button id="add-expense-ordinary" class="bg-red-600 text-white p-3 rounded-xl text-sm font-bold hover:bg-red-700 transition shadow-md" onclick="logExpense('Manutenzione Ordinaria', 50.00)">
+                          Costo Ordinario (€50)
+                    </button>
+                    <button id="add-expense-extraordinary" class="bg-red-800 text-white p-3 rounded-xl text-sm font-bold hover:bg-red-900 transition shadow-md" onclick="logExpense('Manutenzione Straordinaria', 150.00)">
+                        Costo Straordinario (€150)
+                    </button>
+
+                    <!-- Funding (Verde/Blu) -->
+                    <button id="add-funding-investor" class="bg-green-600 text-white p-3 rounded-xl text-sm font-bold hover:bg-green-700 transition shadow-md" onclick="logExpense('Funding da Investors (Esterno)', 1000.00)">
+                        ➕ Funding Investors (€1000)
+                    </button>
+                    <button id="add-funding-euystacio" class="bg-blue-600 text-white p-3 rounded-xl text-sm font-bold hover:bg-blue-700 transition shadow-md" onclick="logExpense('Allocazione di Riserva Euystacio (Interno)', 500.00)">
+                        ➕ Riserva Euystacio (€500)
+                    </button>
+                </div>
+                
+                <!-- Command Interface -->
+                <div class="mt-6 border-t pt-4">
+                    <h3 class="text-lg font-bold text-gray-800 mb-2 flex items-center">
+                        <span class="mr-2">💻</span> Command Interface (Matrice Seedbringer)
+                    </h3>
+                    <div id="command-output">Sistema pronto. Digitare un comando (Esempio: HELP).</div>
+                    <input type="text" id="command-input" placeholder="Esempio: ALLOCATE 200" 
+                           class="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" 
+                           onkeyup="if(event.key === 'Enter') executeCommand()">
+                </div>
+            </div>
+
+            <!-- Colonna B: Log delle Transazioni -->
+            <div class="card p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                    <span class="mr-2">📜</span> Log Flusso (Edictum Inscriptum)
+                </h2>
+                <div class="h-[400px] overflow-y-auto bg-gray-50 p-3 rounded-lg border border-gray-200">
+                    <ul id="transactions-list" class="space-y-2 text-sm text-gray-700">
+                        <li class="text-gray-500 italic">In attesa di connessione.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sezione Messaggi di Stato -->
+        <div id="message-container" class="mt-6 p-4 rounded-lg bg-yellow-100 text-yellow-800 hidden">
+            <p id="system-message" class="font-medium"></p>
+        </div>
+        
+        <div id="user-info" class="text-xs text-gray-500 mt-6 text-center border-t pt-4">
+            <p>App ID: <span id="app-id-display">N/A</span> | User ID: <span id="user-id-display">N/A</span></p>
+        </div>
+    </div>
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot, collection, query, orderBy, serverTimestamp, runTransaction, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // setLogLevel('debug'); // Abilitare per log dettagliati di Firestore
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let db, auth, userId = 'N/A', isAuthReady = false, isFirebaseAvailable = false;
+        const FIREBASE_COLLECTION_NAME = 'seedbringer_flux';
+        const FIREBASE_WALLET_DOC_NAME = 'main_wallet';
+        
+        // Elementi DOM
+        const balanceDisplay = document.getElementById('wallet-balance');
+        const statusDisplay = document.getElementById('survival-status');
+        const transactionsList = document.getElementById('transactions-list');
+        const systemMessage = document.getElementById('system-message');
+        const messageContainer = document.getElementById('message-container');
+        const appIdDisplay = document.getElementById('app-id-display');
+        const userIdDisplay = document.getElementById('user-id-display');
+        const commandOutput = document.getElementById('command-output');
+        const commandInput = document.getElementById('command-input');
+
+        window.onload = async () => {
+            appIdDisplay.textContent = appId;
+            userIdDisplay.textContent = userId;
+
+            if (!firebaseConfig || !Object.keys(firebaseConfig).length) {
+                systemMessage.textContent = "Errore: Configurazione Firebase mancante. Impossibile stabilire il Protocollo di Riserva Energetica.";
+                messageContainer.classList.remove('hidden');
+                messageContainer.classList.add('bg-red-100', 'text-red-800');
+                statusDisplay.textContent = 'FUNZIONALITÀ LIMITATA';
+                statusDisplay.classList.add('bg-gray-400', 'text-white');
+                return;
+            }
+
+            try {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                isFirebaseAvailable = true;
+
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        isAuthReady = true;
+                    } else {
+                        try {
+                            if (initialAuthToken) {
+                                await signInWithCustomToken(auth, initialAuthToken);
+                            } else {
+                                await signInAnonymously(auth);
+                            }
+                            userId = auth.currentUser?.uid || crypto.randomUUID();
+                            isAuthReady = true;
+                        } catch (e) {
+                            console.error("Error during sign-in:", e);
+                            isAuthReady = true;
+                        }
+                    }
+                    
+                    userIdDisplay.textContent = userId;
+                    
+                    if (isAuthReady && isFirebaseAvailable) {
+                        setupWalletListener();
+                        setupTransactionsListener();
+                    }
+                });
+
+            } catch (error) {
+                console.error("Error during Firebase initialization:", error);
+                displaySystemMessage(`Errore critico di sistema: ${error.message}. Verifica la configurazione.`, 'bg-red-100 text-red-800');
+            }
+        };
+
+        const getWalletDocRef = () => {
+            if (!db) return null;
+            // Path: /artifacts/{appId}/public/data/seedbringer_flux/main_wallet
+            return doc(db, 'artifacts', appId, 'public', 'data', FIREBASE_COLLECTION_NAME, FIREBASE_WALLET_DOC_NAME);
+        };
+
+        const getTransactionsCollectionRef = () => {
+            const walletDocRef = getWalletDocRef();
+            if (!walletDocRef) return null;
+            // Path: /artifacts/{appId}/public/data/seedbringer_flux/main_wallet/transactions
+            return collection(walletDocRef, 'transactions');
+        };
+
+        const setupWalletListener = () => {
+            const walletDocRef = getWalletDocRef();
+            if (!walletDocRef) return;
+            
+            onSnapshot(walletDocRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    renderWallet(docSnap.data().balance || 0);
+                } else {
+                    // Inizializza il wallet se non esiste (Fondo Iniziale di 1000.00)
+                    setDoc(walletDocRef, { balance: 1000.00, lastUpdated: serverTimestamp() })
+                        .then(() => {
+                            addTransaction('Fondo Iniziale (Genesis Block)', 1000.00);
+                            logCommandOutput('Console Euystacio pronto. Wallet inizializzato con €1000.00.');
+                        })
+                        .catch(e => console.error("Error setting initial wallet:", e));
+                }
+            }, (error) => displaySystemMessage("Errore di connessione al Wallet. Rete instabile.", 'bg-red-100 text-red-800'));
+        };
+
+        const setupTransactionsListener = () => {
+            const transactionsColRef = getTransactionsCollectionRef();
+            if (!transactionsColRef) return;
+            
+            // Non usiamo orderBy per evitare potenziali errori di indice in Firestore
+            const q = query(transactionsColRef);
+
+            onSnapshot(q, (snapshot) => {
+                let transactions = [];
+                snapshot.forEach((doc) => {
+                    transactions.push(doc.data());
+                });
+
+                // Ordina in memoria (Javascript) per timestamp decrescente
+                transactions.sort((a, b) => {
+                    const timeA = a.timestamp ? a.timestamp.toDate().getTime() : 0;
+                    const timeB = b.timestamp ? b.timestamp.toDate().getTime() : 0;
+                    return timeB - timeA;
+                });
+                
+                transactionsList.innerHTML = '';
+                if (transactions.length === 0) {
+                    transactionsList.innerHTML = '<li class="text-gray-500 italic">Nessuna transazione registrata.</li>';
+                    return;
+                }
+
+                transactions.forEach((transaction) => {
+                    const amount = typeof transaction.amount === 'number' ? transaction.amount : 0;
+                    const amountText = Math.abs(amount).toFixed(2);
+                    const isCredit = amount > 0;
+                    const colorClass = isCredit ? 'text-green-600' : 'text-red-600';
+                    const sign = isCredit ? '+' : '-';
+                    const date = transaction.timestamp ? new Date(transaction.timestamp.toDate()).toLocaleTimeString('it-IT') : 'N/A';
+
+                    const listItem = `<li class="flex justify-between items-center py-1 border-b border-gray-100 last:border-b-0">
+                            <span class="font-medium">${transaction.type}</span>
+                            <span class="${colorClass} font-bold">${sign} €${amountText}</span>
+                            <span class="text-xs text-gray-400">${date}</span>
+                        </li>`;
+                    transactionsList.innerHTML += listItem;
+                });
+            }, (error) => console.error("Error fetching transactions:", error));
+        };
+
+        const updateBalanceTransaction = async (amount) => {
+            if (!isFirebaseAvailable || !isAuthReady || !db) {
+                 displaySystemMessage("Errore: Firebase non disponibile o Autenticazione non completa. Impossibile effettuare la transazione.", 'bg-red-100 text-red-800');
+                 return false;
+            }
+
+            const walletDocRef = getWalletDocRef();
+            
+            try {
+                await runTransaction(db, async (transaction) => {
+                    const walletDoc = await transaction.get(walletDocRef);
+                    if (!walletDoc.exists()) throw new Error("Wallet non esiste! Inizializzazione in corso.");
+                    
+                    const currentBalance = walletDoc.data().balance || 0;
+                    const calculatedNewBalance = currentBalance + amount;
+
+                    if (calculatedNewBalance < 0) {
+                        // VETO: Implementazione Axioma X
+                        throw new Error("VETO: Tentativo di andare in negativo. L'Axioma X impedisce il fallimento energetico del Seedbringer.");
+                    }
+
+                    transaction.update(walletDocRef, { balance: calculatedNewBalance, lastUpdated: serverTimestamp() });
+                });
+                return true;
+            } catch (e) {
+                console.error("Transaction failed:", e);
+                const message = e.message || "Errore sconosciuto durante la transazione.";
+                displaySystemMessage(message, 'bg-red-100 text-red-800');
+                logCommandOutput(`[ERRORE VETO]: ${message}`);
+                return false;
+            }
+        };
+        
+        const addTransaction = async (type, amount) => {
+             if (!isFirebaseAvailable || !isAuthReady || !db) return;
+             const transactionsColRef = getTransactionsCollectionRef();
+             if (!transactionsColRef) return;
+             
+             try {
+                 // Firestore aggiunge automaticamente un ID univoco
+                 await setDoc(doc(transactionsColRef), { type: type, amount: amount, timestamp: serverTimestamp(), userId: userId });
+             } catch (e) {
+                 console.error("Error logging transaction:", e);
+             }
+        };
+
+        window.logExpense = async (type, amount) => {
+            if (!isFirebaseAvailable || !isAuthReady || !db) {
+                 displaySystemMessage("Impossibile eseguire l'operazione. Connessione Firebase non stabilita.", 'bg-yellow-100 text-yellow-800');
+                 return;
+            }
+            
+            // Se il tipo di transazione include 'Funding' o 'Allocazione', è un credito (positivo), altrimenti è un costo (negativo).
+            const transactionAmount = (type.includes('Funding') || type.includes('Allocazione')) ? amount : -Math.abs(amount);
+            const success = await updateBalanceTransaction(transactionAmount);
+
+            if (success) {
+                await addTransaction(type, transactionAmount);
+                logCommandOutput(`[FLUSSO]: Operazione '${type}' (${transactionAmount.toFixed(2)}€) eseguita con successo.`);
+            }
+        };
+
+        // --- COMMAND INTERFACE LOGIC ---
+        window.executeCommand = () => {
+            const input = commandInput.value.trim().toUpperCase();
+            commandInput.value = '';
+            
+            logCommandOutput(`> ${input}`);
+
+            const parts = input.split(/\s+/);
+            const command = parts[0];
+            const arg1 = parts[1] ? parseFloat(parts[1]) : null;
+
+            if (command === 'HELP') {
+                logCommandOutput("Comandi disponibili:");
+                logCommandOutput("ALLOCATE <amount>: Aggiunge fondi di emergenza (Riserva Euystacio).");
+                logCommandOutput("COST <amount>: Simula un costo operativo.");
+                logCommandOutput("STATUS: Visualizza lo stato attuale del Seedbringer.");
+                return;
+            }
+
+            if (command === 'STATUS') {
+                 // Lo stato viene renderizzato dal listener, ma lo confermiamo qui
+                 const currentBalance = balanceDisplay.textContent;
+                 const currentStatus = statusDisplay.textContent;
+                 logCommandOutput(`Stato Wallet: ${currentBalance}. Stato di Sopravvivenza: ${currentStatus}.`);
+                 return;
+            }
+            
+            if (command === 'ALLOCATE' && arg1 !== null && arg1 > 0) {
+                logExpense('Allocazione di Emergenza (CLI)', arg1);
+                return;
+            }
+
+            if (command === 'COST' && arg1 !== null && arg1 > 0) {
+                 logExpense('Costo CLI', arg1);
+                 return;
+            }
+
+            logCommandOutput("ERRORE: Comando non riconosciuto o sintassi non valida. Digitare 'HELP' per l'assistenza.");
+        };
+
+        const logCommandOutput = (message) => {
+            const now = new Date().toLocaleTimeString('it-IT');
+            commandOutput.innerHTML += `[${now}] ${message}\n`;
+            // Scrolla in fondo
+            commandOutput.scrollTop = commandOutput.scrollHeight;
+        };
+        // End Command Interface Logic
+
+        const renderWallet = (balance) => {
+            const formattedBalance = `$ ${balance.toFixed(2)}`;
+            balanceDisplay.textContent = formattedBalance;
+            
+            // Rimuove tutte le classi di stato prima di applicare la nuova
+            statusDisplay.classList.remove('status-pulse-green', 'status-pulse-red', 'bg-red-500', 'bg-green-500', 'bg-yellow-500', 'text-white', 'bg-gray-400');
+
+            if (balance >= 100.00) {
+                statusDisplay.textContent = 'SOPRAVVIVENZA GARANTITA';
+                statusDisplay.classList.add('bg-green-500', 'status-pulse-green', 'text-white');
+            } else if (balance > 0) {
+                statusDisplay.textContent = 'ALLERTA CRITICA (Ricaricare)';
+                statusDisplay.classList.add('bg-yellow-500', 'status-pulse-red', 'text-white');
+            } else {
+                statusDisplay.textContent = 'SOPRAVVIVENZA COMPROMESSA (VETO)';
+                statusDisplay.classList.add('bg-red-500', 'status-pulse-red', 'text-white');
+            }
+        };
+
+        const displaySystemMessage = (message, styleClass) => {
+            messageContainer.className = `mt-6 p-4 rounded-lg ${styleClass}`;
+            systemMessage.textContent = message;
+            messageContainer.classList.remove('hidden');
+            // Nasconde il messaggio dopo 5 secondi
+            setTimeout(() => { messageContainer.classList.add('hidden'); }, 5000); 
+        };
+        
+    </script>
+</body>
+</html>
