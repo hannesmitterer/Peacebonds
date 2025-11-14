@@ -1,0 +1,45 @@
+name: Deploy Peacebonds Dashboard
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy-dashboard:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Unzip dashboard
+        run: |
+          unzip PeaceBondsII_Dashboard(1).zip -d dashboard
+
+      - name: List dashboard contents
+        run: ls -lah dashboard
+
+      - name: Install dependencies (if Node project)
+        run: |
+          if [ -f dashboard/package.json ]; then
+            cd dashboard
+            npm install
+          fi
+
+      - name: Run tests (if present)
+        run: |
+          if [ -f dashboard/package.json ]; then
+            cd dashboard
+            npm test || echo "No tests found or failed"
+          fi
+
+      - name: Build/start app (example for Node)
+        run: |
+          if [ -f dashboard/package.json ]; then
+            cd dashboard
+            npm run build || true
+            npm start || true
+          fi
+
+      # Add actual deployment steps here (e.g., upload to cloud, deploy to web server, etc.)
