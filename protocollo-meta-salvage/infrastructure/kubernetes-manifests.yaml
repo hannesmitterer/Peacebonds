@@ -1,0 +1,346 @@
+# Kubernetes Manifests for Protocollo Meta Salvage
+# Peace Bonds Enforcement and Monitoring
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: protocollo-meta-salvage
+  labels:
+    name: protocollo-meta-salvage
+    ethical-preservation: enabled
+
+---
+# ConfigMap for OPA Policies
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: opa-policies
+  namespace: protocollo-meta-salvage
+data:
+  opa-policies.rego: |
+    package protocollo.meta_salvage
+    
+    default allow = false
+    default peace_bond_required = false
+    
+    symbiosis_threshold_warning := 0.7
+    symbiosis_threshold_critical := 0.5
+    
+    peace_bond_required {
+        input.metrics.symbiosis_score < symbiosis_threshold_warning
+    }
+    
+    emergency_peace_bond_required {
+        input.metrics.symbiosis_score < symbiosis_threshold_critical
+    }
+    
+    throughput_limit := 5000 {
+        peace_bond_required
+    } else := 10000
+    
+    decision := {
+        "allow": not peace_bond_required,
+        "peace_bond_required": peace_bond_required,
+        "throughput_limit": throughput_limit
+    }
+
+---
+# Deployment for Peace Bonds Controller
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: peace-bonds-controller
+  namespace: protocollo-meta-salvage
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: peace-bonds-controller
+  template:
+    metadata:
+      labels:
+        app: peace-bonds-controller
+        component: enforcement
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: peace-bonds-controller
+      containers:
+        - name: controller
+          image: peace-bonds-controller:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              name: http
+            - containerPort: 9090
+              name: metrics
+          env:
+            - name: OPA_ENDPOINT
+              value: "http://opa:8181/v1/data/protocollo/meta_salvage/decision"
+            - name: PROMETHEUS_ENDPOINT
+              value: "http://prometheus:9090"
+            - name: KAFKA_BROKERS
+              value: "kafka-broker-1:9092,kafka-broker-2:9092,kafka-broker-3:9092"
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          volumeMounts:
+            - name: config
+              mountPath: /etc/config
+            - name: api-credentials
+              mountPath: /etc/secrets
+              readOnly: true
+          resources:
+            requests:
+              cpu: 500m
+              memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
+      volumes:
+        - name: config
+          configMap:
+            name: peace-bond-config
+        - name: api-credentials
+          secret:
+            secretName: api-credentials
+
+---
+# Service for Peace Bonds Controller
+apiVersion: v1
+kind: Service
+metadata:
+  name: peace-bonds-controller
+  namespace: protocollo-meta-salvage
+spec:
+  selector:
+    app: peace-bonds-controller
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+    - name: metrics
+      port: 9090
+      targetPort: 9090
+  type: ClusterIP
+
+---
+# ServiceAccount for Peace Bonds Controller
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: peace-bonds-controller
+  namespace: protocollo-meta-salvage
+
+---
+# ClusterRole for Peace Bonds Controller
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: peace-bonds-controller
+rules:
+  - apiGroups: [""]
+    resources: ["resourcequotas", "limitranges"]
+    verbs: ["get", "list", "watch", "create", "update", "patch"]
+  - apiGroups: ["networking.k8s.io"]
+    resources: ["networkpolicies"]
+    verbs: ["get", "list", "watch", "create", "update", "patch"]
+  - apiGroups: [""]
+    resources: ["pods", "services"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["apps"]
+    resources: ["deployments", "replicasets"]
+    verbs: ["get", "list", "watch", "update", "patch"]
+
+---
+# ClusterRoleBinding for Peace Bonds Controller
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: peace-bonds-controller
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: peace-bonds-controller
+subjects:
+  - kind: ServiceAccount
+    name: peace-bonds-controller
+    namespace: protocollo-meta-salvage
+
+---
+# CronJob for Continuous Monitoring
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: continuous-monitoring
+  namespace: protocollo-meta-salvage
+spec:
+  schedule: "*/5 * * * *"  # Every 5 minutes
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: continuous-monitoring
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: monitor
+              image: python:3.11
+              command:
+                - python
+                - -c
+                - |
+                  import requests
+                  import json
+                  
+                  # Collect metrics from Prometheus
+                  prometheus_url = "http://prometheus:9090/api/v1/query"
+                  
+                  metrics = {
+                      'symbiosis_score': requests.get(f"{prometheus_url}?query=avg_over_time(symbiosis_score[5m])").json(),
+                      'lock_in_risk': requests.get(f"{prometheus_url}?query=lock_in_risk_score").json(),
+                  }
+                  
+                  # Check if Peace Bond activation is needed
+                  for metric, data in metrics.items():
+                      print(f"Metric {metric}: {data}")
+                  
+                  print("Monitoring cycle complete")
+              env:
+                - name: PROMETHEUS_ENDPOINT
+                  value: "http://prometheus:9090"
+
+---
+# Job for ML Model Retraining (triggered by workflow)
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ml-model-retraining
+  namespace: protocollo-meta-salvage
+spec:
+  template:
+    metadata:
+      labels:
+        app: ml-retraining
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: trainer
+          image: tensorflow/tensorflow:latest
+          command:
+            - python
+            - /app/train_model.py
+          env:
+            - name: ELASTICSEARCH_HOST
+              value: "elasticsearch:9200"
+            - name: POSTGRES_HOST
+              value: "postgresql:5432"
+            - name: MODEL_OUTPUT_PATH
+              value: "/models/anomaly_detector"
+          volumeMounts:
+            - name: training-data
+              mountPath: /data
+            - name: model-output
+              mountPath: /models
+          resources:
+            requests:
+              cpu: 2
+              memory: 4Gi
+            limits:
+              cpu: 4
+              memory: 8Gi
+      volumes:
+        - name: training-data
+          persistentVolumeClaim:
+            claimName: training-data-pvc
+        - name: model-output
+          persistentVolumeClaim:
+            claimName: model-output-pvc
+
+---
+# PersistentVolumeClaim for Training Data
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: training-data-pvc
+  namespace: protocollo-meta-salvage
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 100Gi
+  storageClassName: fast-ssd
+
+---
+# PersistentVolumeClaim for Model Output
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: model-output-pvc
+  namespace: protocollo-meta-salvage
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 50Gi
+  storageClassName: fast-ssd
+
+---
+# Horizontal Pod Autoscaler for Peace Bonds Controller
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: peace-bonds-controller-hpa
+  namespace: protocollo-meta-salvage
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: peace-bonds-controller
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
+
+---
+# PodDisruptionBudget for High Availability
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: peace-bonds-controller-pdb
+  namespace: protocollo-meta-salvage
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: peace-bonds-controller

@@ -1,0 +1,98 @@
+# Apache Kafka Configuration for Protocollo Meta Salvage
+# Monitoring and Metrics Collection
+
+bootstrap_servers:
+  - kafka-broker-1:9092
+  - kafka-broker-2:9092
+  - kafka-broker-3:9092
+
+topics:
+  # Symbiosis Score Monitoring
+  symbiosis_scores:
+    name: symbiosis-scores
+    partitions: 3
+    replication_factor: 3
+    retention_ms: 604800000  # 7 days
+    config:
+      compression.type: lz4
+      cleanup.policy: delete
+
+  # Data Flow Anomalies
+  data_flow_anomalies:
+    name: data-flow-anomalies
+    partitions: 3
+    replication_factor: 3
+    retention_ms: 2592000000  # 30 days
+    config:
+      compression.type: lz4
+      cleanup.policy: delete
+
+  # Lock-in Risk Indicators
+  lock_in_risks:
+    name: lock-in-risks
+    partitions: 3
+    replication_factor: 3
+    retention_ms: 2592000000  # 30 days
+    config:
+      compression.type: lz4
+      cleanup.policy: delete
+
+  # Peace Bonds Triggers
+  peace_bonds_triggers:
+    name: peace-bonds-triggers
+    partitions: 5
+    replication_factor: 3
+    retention_ms: 2592000000  # 30 days
+    config:
+      compression.type: lz4
+      cleanup.policy: compact
+
+  # Ethical Risk Events
+  ethical_risk_events:
+    name: ethical-risk-events
+    partitions: 5
+    replication_factor: 3
+    retention_ms: 7776000000  # 90 days
+    config:
+      compression.type: lz4
+      cleanup.policy: compact
+
+  # Audit Trail Events
+  audit_events:
+    name: audit-events
+    partitions: 3
+    replication_factor: 3
+    retention_ms: 31536000000  # 365 days
+    config:
+      compression.type: lz4
+      cleanup.policy: compact
+
+# Producer Configuration
+producer:
+  acks: all
+  retries: 3
+  batch_size: 16384
+  linger_ms: 10
+  buffer_memory: 33554432
+  compression_type: lz4
+  max_in_flight_requests_per_connection: 5
+  enable_idempotence: true
+
+# Consumer Configuration
+consumer:
+  group_id: protocollo-meta-salvage
+  auto_offset_reset: earliest
+  enable_auto_commit: false
+  max_poll_records: 500
+  session_timeout_ms: 30000
+  heartbeat_interval_ms: 10000
+  fetch_min_bytes: 1
+  fetch_max_wait_ms: 500
+
+# Security Configuration
+security:
+  protocol: SASL_SSL
+  sasl_mechanism: SCRAM-SHA-512
+  ssl_ca_location: /etc/kafka/ssl/ca-cert
+  ssl_certificate_location: /etc/kafka/ssl/client-cert
+  ssl_key_location: /etc/kafka/ssl/client-key

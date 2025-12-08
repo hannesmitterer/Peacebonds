@@ -1,0 +1,67 @@
+# OPA Configuration for Protocollo Meta Salvage
+
+services:
+  metrics_api:
+    url: http://metrics-service:8080
+    credentials:
+      bearer:
+        token_path: /var/run/secrets/metrics-api-token
+
+  provider_registry:
+    url: http://provider-registry:8080
+    credentials:
+      bearer:
+        token_path: /var/run/secrets/provider-registry-token
+
+  audit_service:
+    url: http://audit-service:8080
+    credentials:
+      bearer:
+        token_path: /var/run/secrets/audit-token
+
+labels:
+  environment: production
+  component: decision-engine
+  system: protocollo-meta-salvage
+
+decision_logs:
+  service: audit_service
+  reporting:
+    min_delay_seconds: 10
+    max_delay_seconds: 30
+  mask_decision: false
+
+status:
+  service: metrics_api
+  console: true
+
+bundles:
+  protocollo:
+    service: policy_bundle_service
+    resource: bundles/protocollo-meta-salvage.tar.gz
+    polling:
+      min_delay_seconds: 60
+      max_delay_seconds: 120
+
+discovery:
+  name: discovery
+  resource: /configurations/opa-discovery
+
+default_decision: /protocollo/meta_salvage/decision
+
+server:
+  encoding:
+    gzip:
+      min_length: 1024
+      compression_level: 9
+
+# Cache configuration for performance
+caching:
+  inter_query_builtin_cache:
+    max_size_bytes: 104857600  # 100 MB
+
+# Distributed tracing
+distributed_tracing:
+  type: grpc
+  address: jaeger-collector:14250
+  service_name: opa-protocollo-meta-salvage
