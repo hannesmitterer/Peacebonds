@@ -287,7 +287,8 @@ spec:
   resources:
     requests:
       storage: 100Gi
-  storageClassName: fast-ssd
+  # storageClassName should be set via environment-specific values or kustomize
+  # storageClassName: fast-ssd
 
 ---
 # PersistentVolumeClaim for Model Output
@@ -302,7 +303,8 @@ spec:
   resources:
     requests:
       storage: 50Gi
-  storageClassName: fast-ssd
+  # storageClassName should be set via environment-specific values or kustomize
+  # storageClassName: fast-ssd
 
 ---
 # Horizontal Pod Autoscaler for Peace Bonds Controller

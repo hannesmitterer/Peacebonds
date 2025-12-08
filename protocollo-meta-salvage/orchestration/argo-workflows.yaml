@@ -446,8 +446,18 @@ spec:
   timezone: "UTC"
   workflowSpec:
     entrypoint: main-workflow
+    activeDeadlineSeconds: 3600  # 1 hour max runtime
+    podGC:
+      strategy: OnWorkflowCompletion
     templateDefaults:
       timeout: 600s
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+        limits:
+          cpu: 500m
+          memory: 512Mi
     templates:
       - name: main-workflow
         templateRef:

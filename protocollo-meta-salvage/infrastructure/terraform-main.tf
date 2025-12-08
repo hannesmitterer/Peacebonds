@@ -13,6 +13,10 @@ terraform {
       source  = "hashicorp/helm"
       version = "~> 2.11"
     }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.5"
+    }
   }
   
   backend "s3" {
@@ -293,16 +297,28 @@ resource "helm_release" "prometheus" {
 # Grafana Deployment
 # ============================================
 
+variable "grafana_admin_password" {
+  description = "Grafana admin password"
+  type        = string
+  sensitive   = true
+  default     = ""  # Must be provided via environment variable or secure vault
+}
+
 resource "helm_release" "grafana" {
   name       = "grafana"
   repository = "https://grafana.github.io/helm-charts"
   chart      = "grafana"
   namespace  = kubernetes_namespace.protocollo.metadata[0].name
   
-  set {
+  set_sensitive {
     name  = "adminPassword"
-    value = "admin123"  # Should be from a secure source
+    value = var.grafana_admin_password != "" ? var.grafana_admin_password : random_password.grafana_password.result
   }
+}
+
+resource "random_password" "grafana_password" {
+  length  = 16
+  special = true
 }
 
 # ============================================

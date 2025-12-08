@@ -124,7 +124,12 @@ scrape_configs:
 
 # Remote write for long-term storage
 remote_write:
-  - url: http://victoria-metrics:8428/api/v1/write
+  - url: https://victoria-metrics:8428/api/v1/write
+    tls_config:
+      insecure_skip_verify: false
+      ca_file: /etc/prometheus/tls/ca.crt
+      cert_file: /etc/prometheus/tls/client.crt
+      key_file: /etc/prometheus/tls/client.key
     queue_config:
       max_samples_per_send: 10000
       max_shards: 30

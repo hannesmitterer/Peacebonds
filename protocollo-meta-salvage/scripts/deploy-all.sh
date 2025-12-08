@@ -135,6 +135,7 @@ main() {
     check_prerequisites
     create_namespace
     add_helm_repos
+    deploy_infrastructure
     display_access_info
 }
 

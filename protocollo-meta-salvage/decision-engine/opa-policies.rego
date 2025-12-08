@@ -87,7 +87,12 @@ rate_limiting_action := action if {
         "provider": input.provider.id,
         "reason": "throughput_exceeded"
     }
-} else := {"apply": false}
+} else := {
+    "apply": false,
+    "limit": null,
+    "provider": null,
+    "reason": null
+}
 
 # ============================================
 # Resource Provisioning Constraints
