@@ -93,12 +93,24 @@ EOF
     exit 1
 fi
 
-# Check if private key is set
+# Check if private key is set and valid
 if ! grep -q "^PRIVATE_KEY=" "${FRAMEWORK_DIR}/.env" || grep -q "PRIVATE_KEY=your_private_key_here" "${FRAMEWORK_DIR}/.env"; then
     echo -e "${RED}✗ PRIVATE_KEY not configured in .env${NC}"
     echo -e "${YELLOW}Please set PRIVATE_KEY in .env file${NC}"
     exit 1
 fi
+
+# Extract and validate private key format
+PRIVATE_KEY=$(grep "^PRIVATE_KEY=" "${FRAMEWORK_DIR}/.env" | cut -d '=' -f2 | tr -d '"' | tr -d "'")
+
+# Check if it looks like a valid Ethereum private key (64 hex chars, optionally with 0x prefix)
+if ! echo "$PRIVATE_KEY" | grep -qE '^(0x)?[0-9a-fA-F]{64}$'; then
+    echo -e "${RED}✗ PRIVATE_KEY format appears invalid${NC}"
+    echo -e "${YELLOW}Expected: 64 hexadecimal characters (optionally prefixed with 0x)${NC}"
+    echo -e "${YELLOW}Example: 0x1234567890abcdef...${NC}"
+    exit 1
+fi
+
 echo -e "${GREEN}✓ Environment configured${NC}"
 
 # Create Hardhat config if needed

@@ -101,14 +101,24 @@ echo -e "${GREEN}✓ Content prepared in: $IPFS_DIR${NC}"
 echo -e "${YELLOW}[4/7] Calculating individual file CIDs...${NC}"
 declare -A FILE_CIDS
 
-for file in "$IPFS_DIR/docs/framework"/*.md; do
-    if [ -f "$file" ]; then
-        filename=$(basename "$file")
-        cid=$(ipfs add --only-hash -q "$file")
-        FILE_CIDS["$filename"]="$cid"
-        echo -e "  ${BLUE}$filename${NC} → ${GREEN}$cid${NC}"
+# Ensure we have files to process
+if [ -d "$IPFS_DIR/docs/framework" ]; then
+    for file in "$IPFS_DIR/docs/framework"/*.md; do
+        if [ -f "$file" ]; then
+            filename=$(basename "$file")
+            cid=$(ipfs add --only-hash -q "$file")
+            FILE_CIDS["$filename"]="$cid"
+            echo -e "  ${BLUE}$filename${NC} → ${GREEN}$cid${NC}"
+        fi
+    done
+    
+    # Verify we found files
+    if [ ${#FILE_CIDS[@]} -eq 0 ]; then
+        echo -e "${YELLOW}⚠ No markdown files found in framework directory${NC}"
     fi
-done
+else
+    echo -e "${YELLOW}⚠ Framework docs directory not found${NC}"
+fi
 
 # Add complete framework to IPFS
 echo -e "${YELLOW}[5/7] Adding framework to IPFS...${NC}"
@@ -173,10 +183,15 @@ ipfs://$ROOT_CID
 |----------|-----|--------------|
 EOF
 
-for filename in "${!FILE_CIDS[@]}"; do
-    cid="${FILE_CIDS[$filename]}"
-    echo "| $filename | \`$cid\` | [View](https://ipfs.io/ipfs/$cid) |" >> "$CID_REGISTRY"
-done
+# Only add rows if we have CIDs
+if [ ${#FILE_CIDS[@]} -gt 0 ]; then
+    for filename in "${!FILE_CIDS[@]}"; do
+        cid="${FILE_CIDS[$filename]}"
+        echo "| $filename | \`$cid\` | [View](https://ipfs.io/ipfs/$cid) |" >> "$CID_REGISTRY"
+    done
+else
+    echo "| (No individual files) | - | - |" >> "$CID_REGISTRY"
+fi
 
 cat >> "$CID_REGISTRY" << EOF
 

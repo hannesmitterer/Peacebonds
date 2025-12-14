@@ -93,10 +93,19 @@ contract IPFSAnchor {
         _;
     }
     
-    /// @notice Validates CID format (basic check)
+    /// @notice Validates CID format (checks for basic IPFS CID characteristics)
     modifier validCID(string memory cid) {
-        require(bytes(cid).length > 0, "IPFSAnchor: CID cannot be empty");
-        require(bytes(cid).length < 100, "IPFSAnchor: CID too long");
+        bytes memory cidBytes = bytes(cid);
+        require(cidBytes.length > 0, "IPFSAnchor: CID cannot be empty");
+        require(cidBytes.length >= 46, "IPFSAnchor: CID too short"); // Min length for CIDv0
+        require(cidBytes.length <= 100, "IPFSAnchor: CID too long"); // Reasonable max
+        
+        // Check that it starts with valid IPFS CID prefix (Qm for CIDv0 or b for CIDv1)
+        require(
+            (cidBytes[0] == 'Q' && cidBytes[1] == 'm') || cidBytes[0] == 'b',
+            "IPFSAnchor: Invalid CID prefix"
+        );
+        
         _;
     }
     

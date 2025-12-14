@@ -81,15 +81,14 @@ pin_to_web3storage() {
         npm install -g @web3-storage/w3cli 2>&1 | grep -v "npm WARN" || true
     fi
     
-    # Upload via API
+    # Upload via API (note: CAR file creation would require ipfs-car package)
+    # For now, we'll use the CLI approach which is more reliable
     if [ -d "${FRAMEWORK_DIR}/.ipfs-staging" ]; then
-        echo -e "${BLUE}Uploading content via Web3.Storage...${NC}"
+        echo -e "${BLUE}Uploading content via Web3.Storage CLI...${NC}"
         
-        # Create CAR file from directory
-        response=$(curl -s -X POST "https://api.web3.storage/upload" \
-            -H "Authorization: Bearer $WEB3_STORAGE_TOKEN" \
-            -H "X-NAME: Euystacio Framework v1.2" \
-            --data-binary "@${FRAMEWORK_DIR}/.ipfs-staging.car" 2>&1 || echo "error")
+        # We skip the API approach due to CAR file complexity
+        # and go directly to CLI upload
+        response="error"
         
         if echo "$response" | grep -q "error"; then
             echo -e "${YELLOW}⚠ Web3.Storage API upload failed, trying CLI...${NC}"
