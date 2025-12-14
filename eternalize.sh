@@ -138,6 +138,7 @@ install_ipfs() {
     cd kubo || exit 1
     
     # Try to install to /usr/local/bin, fallback to user directory
+    log_info "Attempting to install IPFS (may require sudo)..."
     if sudo bash install.sh 2>/dev/null; then
         log_success "IPFS installed to /usr/local/bin"
     else
@@ -195,7 +196,8 @@ start_ipfs_daemon() {
     
     # Start daemon in background
     log_info "Launching IPFS daemon in background..."
-    ipfs daemon &> /tmp/ipfs-daemon.log &
+    DAEMON_LOG="$HOME/.ipfs/daemon.log"
+    ipfs daemon &> "$DAEMON_LOG" &
     IPFS_DAEMON_PID=$!
     
     # Wait for daemon to be ready
@@ -213,7 +215,7 @@ start_ipfs_daemon() {
     done
     
     log_error "IPFS daemon failed to start within ${MAX_WAIT} seconds"
-    log_info "Check /tmp/ipfs-daemon.log for details"
+    log_info "Check $DAEMON_LOG for details"
     exit 1
 }
 
@@ -292,7 +294,7 @@ EOF
 cleanup() {
     log_info "Cleaning up..."
     # Kill IPFS daemon if we started it
-    if [ ! -z "$IPFS_DAEMON_PID" ]; then
+    if [[ -n "$IPFS_DAEMON_PID" ]]; then
         log_info "Stopping IPFS daemon..."
         kill $IPFS_DAEMON_PID 2>/dev/null || true
     fi
