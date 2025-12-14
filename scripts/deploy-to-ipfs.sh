@@ -6,6 +6,17 @@
 
 set -e
 
+# Cleanup function to stop IPFS daemon if we started it
+cleanup() {
+    if [ "$STARTED_DAEMON" = true ] && [ -n "$IPFS_PID" ]; then
+        echo "Cleaning up: Stopping IPFS daemon..."
+        kill $IPFS_PID 2>/dev/null || true
+    fi
+}
+
+# Set up trap to ensure cleanup happens even on error
+trap cleanup EXIT
+
 echo "================================================"
 echo "Euystacio Framework - IPFS Deployment Script"
 echo "================================================"
@@ -229,11 +240,5 @@ echo "5. Update distribution/README.md with final details"
 echo ""
 echo "Deployment details saved to: $OUTPUT_FILE"
 echo ""
-
-# Cleanup: Stop daemon if we started it
-if [ "$STARTED_DAEMON" = true ]; then
-    echo "Stopping IPFS daemon..."
-    kill $IPFS_PID 2>/dev/null || true
-fi
 
 echo -e "${GREEN}✓ IPFS deployment complete!${NC}"

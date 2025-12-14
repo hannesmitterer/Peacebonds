@@ -16,10 +16,10 @@ This roadmap outlines the phased deployment of the Euystacio Framework from gene
 
 #### Month 1-2: Genesis and Documentation
 - [x] Create Executive Master Document
-- [x] Establish IPFS distribution
-- [x] Deploy blockchain anchoring on Sepolia
+- [ ] Establish IPFS distribution (infrastructure ready - awaiting deployment)
+- [ ] Deploy blockchain anchoring on Sepolia (contract ready - awaiting deployment)
 - [x] Launch GitHub repository
-- [ ] Create comprehensive documentation
+- [x] Create comprehensive documentation
 - [ ] Set up community channels (Discord, Discussions)
 - [ ] Publish initial website
 

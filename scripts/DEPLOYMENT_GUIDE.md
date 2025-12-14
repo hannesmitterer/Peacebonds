@@ -14,7 +14,8 @@ This guide explains how to deploy the EuystacioDocumentAnchor smart contract and
 ### Step 1: Install Hardhat
 
 ```bash
-cd /home/runner/work/Peacebonds/Peacebonds
+# Navigate to your repository root
+cd /path/to/Peacebonds
 npm init -y
 npm install --save-dev hardhat @nomicfoundation/hardhat-toolbox
 npx hardhat init

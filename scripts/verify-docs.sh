@@ -85,12 +85,13 @@ check_file "scripts/EuystacioDocumentAnchor.sol"
 check_file "scripts/DEPLOYMENT_GUIDE.md"
 
 # Check if deploy script is executable
-if [ -f "scripts/deploy-to-ipfs.sh" ]; then
-    if [ -x "scripts/deploy-to-ipfs.sh" ]; then
-        echo -e "${GREEN}✓${NC} scripts/deploy-to-ipfs.sh is executable"
+DEPLOY_SCRIPT="scripts/deploy-to-ipfs.sh"
+if [ -f "$DEPLOY_SCRIPT" ]; then
+    if [ -x "$DEPLOY_SCRIPT" ]; then
+        echo -e "${GREEN}✓${NC} $DEPLOY_SCRIPT is executable"
     else
-        echo -e "${YELLOW}!${NC} scripts/deploy-to-ipfs.sh is not executable"
-        echo "  Run: chmod +x scripts/deploy-to-ipfs.sh"
+        echo -e "${YELLOW}!${NC} $DEPLOY_SCRIPT is not executable"
+        echo "  Run: chmod +x $DEPLOY_SCRIPT"
         ((WARNINGS++))
     fi
 fi
