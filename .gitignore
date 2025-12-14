@@ -1,0 +1,56 @@
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Build outputs
+dist/
+build/
+out/
+.next/
+*.tsbuildinfo
+
+# IPFS staging
+.ipfs-staging/
+.ipfs-staging.car
+
+# Generated files
+.ipfs-root-cid
+.deployment-info.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+ipfs.log
+
+# Hardhat
+cache/
+artifacts/
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Temporary files
+/tmp/
+*.tmp
+*.temp
+
+# OS
+Thumbs.db
+.DS_Store
