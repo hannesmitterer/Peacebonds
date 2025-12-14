@@ -52,8 +52,11 @@ The following documents are distributed via IPFS:
 #### Step 1: Content Preparation
 
 ```bash
+# Navigate to your repository root
+cd /path/to/Peacebonds
+
 # Navigate to docs directory
-cd /home/runner/work/Peacebonds/Peacebonds/docs
+cd docs
 
 # Verify content integrity
 find . -type f -name "*.md" -exec sha256sum {} \;
