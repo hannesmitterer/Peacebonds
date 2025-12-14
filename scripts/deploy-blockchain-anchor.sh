@@ -103,6 +103,12 @@ fi
 # Extract and validate private key format
 PRIVATE_KEY=$(grep "^PRIVATE_KEY=" "${FRAMEWORK_DIR}/.env" | cut -d '=' -f2 | tr -d '"' | tr -d "'")
 
+# WARNING: For production, use hardware wallets or secure key management
+echo -e "${YELLOW}⚠ WARNING: Using private key from .env file${NC}"
+echo -e "${YELLOW}⚠ For production, consider using hardware wallets (Ledger/Trezor)${NC}"
+echo -e "${YELLOW}⚠ or secure key management services${NC}"
+echo ""
+
 # Check if it looks like a valid Ethereum private key (64 hex chars, optionally with 0x prefix)
 if ! echo "$PRIVATE_KEY" | grep -qE '^(0x)?[0-9a-fA-F]{64}$'; then
     echo -e "${RED}✗ PRIVATE_KEY format appears invalid${NC}"

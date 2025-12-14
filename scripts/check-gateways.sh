@@ -53,13 +53,15 @@ check_gateway() {
     local url="${gateway}${cid}"
     
     # Timeout after 10 seconds
-    local start_time=$(date +%s%3N)
+    # Use portable time measurement (works on Linux and macOS)
+    local start_time=$(date +%s)
     local response=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$url" 2>&1)
-    local end_time=$(date +%s%3N)
+    local end_time=$(date +%s)
     local duration=$((end_time - start_time))
+    local duration_ms=$((duration * 1000))
     
     if [ "$response" = "200" ]; then
-        echo -e "${GREEN}✓${NC} $(printf '%-40s' "$gateway") ${GREEN}OK${NC} (${duration}ms)"
+        echo -e "${GREEN}✓${NC} $(printf '%-40s' "$gateway") ${GREEN}OK${NC} (~${duration_ms}ms)"
         return 0
     elif [ "$response" = "429" ]; then
         echo -e "${YELLOW}⚠${NC} $(printf '%-40s' "$gateway") ${YELLOW}Rate Limited${NC}"

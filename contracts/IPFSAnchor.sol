@@ -100,11 +100,15 @@ contract IPFSAnchor {
         require(cidBytes.length >= 46, "IPFSAnchor: CID too short"); // Min length for CIDv0
         require(cidBytes.length <= 100, "IPFSAnchor: CID too long"); // Reasonable max
         
-        // Check that it starts with valid IPFS CID prefix (Qm for CIDv0 or b for CIDv1)
-        require(
-            (cidBytes[0] == 'Q' && cidBytes[1] == 'm') || cidBytes[0] == 'b',
-            "IPFSAnchor: Invalid CID prefix"
-        );
+        // Check that it starts with valid IPFS CID prefix
+        // CIDv0: Qm (base58)
+        // CIDv1: b (base32), z (base58), f (base16), u (base64url), etc.
+        bool validPrefix = (cidBytes[0] == 'Q' && cidBytes[1] == 'm') || 
+                          cidBytes[0] == 'b' || 
+                          cidBytes[0] == 'z' || 
+                          cidBytes[0] == 'f' || 
+                          cidBytes[0] == 'u';
+        require(validPrefix, "IPFSAnchor: Invalid CID prefix");
         
         _;
     }

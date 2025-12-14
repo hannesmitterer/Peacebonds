@@ -202,15 +202,14 @@ cat >> "$CID_REGISTRY" << EOF
 ### Command Line
 
 \`\`\`bash
-# Get entire framework
-ipfs get $ROOT_CID -o euystacio-framework
+# Get entire framework (replace <ROOT-CID> with actual CID from blockchain)
+ipfs get <ROOT-CID> -o euystacio-framework
 
-# Get specific document
-ipfs cat ${FILE_CIDS["COVENANT.md"]} > COVENANT.md
+# Get specific document (replace <COVENANT-CID> with actual CID)
+ipfs cat <COVENANT-CID> > COVENANT.md
 
-# Verify integrity
+# Verify integrity (should match ROOT-CID from above)
 ipfs add --only-hash -r euystacio-framework
-# Should output: $ROOT_CID
 \`\`\`
 
 ### Web Browser
