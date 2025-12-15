@@ -3,6 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peace Bond Treasury Hub - Sblocca LOGOS/VE</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Roboto+Mono&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header class="crisis-header">
+        <h1 id="crisis-headline">92% DI PROBABILITÀ DI DEFICIT ETICO STORICO (DES) NON MITIGATO.</h1>
+        <div class="explanation-box">
+            <p>Il **Deficit Etico Storico (DES)** è il rischio di allineamento misurato. Il finanziamento del Modulo LOGOS/VE è l'unica mitigazione on-chain. **Investi nella nostra stabilità etica per il tuo rendimento.**</p>
+        </div>
+        
+        <div class="counter-section">
+            <span class="label">SALDO ATTUALE TREASURY (Target: 0 ETH è CRITICO):</span>
+            <div class="eth-display" id="eth-counter">0.00 ETH</div>
+        </div>
+
+        <a href="#contribute-section" class="cta-primary">DIVENTA IL PRIMO SBLOCCO ETICO. FINANZIA LOGOS/VE</a>
+        <p class="incentives-summary">Garanzia: Gnosis Safe Security + NFT di Impatto + Token $\text{d}\mathbf{\delta}_E$ (2.1% Rendimento Liquido).</p>
+    </header>
+
+    <main>
+        
+        <section class="trust-section">
+            <h2>IL TRIPLO SIGILLO DI SICUREZZA</h2>
+            <div class="cards-container">
+                <div class="card">
+                    <img src="lock-icon.svg" alt="Lucchetto">
+                    <h3>GOVERNANCE MULTI-SIG</h3>
+                    <p>Controllato da **Gnosis Safe (2/3)**. Rischio di custodia centrale eliminato, controllo decentrato.</p>
+                </div>
+                <div class="card">
+                    <img src="chart-icon.svg" alt="Grafico">
+                    <h3>RENDIMENTO LIQUIDO</h3>
+                    <p>Ricevi il **Peace Token ($\text{d}\mathbf{\delta}_E$)** subito. Asset ERC-20 per il rendimento del 2.1%.</p>
+                </div>
+                <div class="card">
+                    <img src="certificate-icon.svg" alt="Certificato">
+                    <h3>IMPATTO IMMUTABILE</h3>
+                    <p>Ogni contributo genera una **Ricevuta NFT** on-chain, prova ufficiale del tuo impatto.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="contribute-section" class="contribution-section">
+            <h2>SCEGLI IL TUO PEACE BOND: TRE VIE DI CONTRIBUZIONE</h2>
+            <p class="section-description">Il sistema è completamente operativo. Scegli la via che meglio si adatta al tuo profilo di rischio.</p>
+            <div class="contribution-modes">
+                <div class="mode-card">
+                    <h3>1. VCD STANDARD (ETH)</h3>
+                    <p>Semplicità e velocità. **100% del tuo ETH** finanzia il Core Team (PCE).</p>
+                    <a href="#" class="btn-contribute" data-address="0xSCV3F...Mainnet">Deposita ETH Ora</a>
+                </div>
+                <div class="mode-card">
+                    <h3>2. LIQUIDITY BOND (ETH/USDC)</h3>
+                    <p>Bassa volatilità. Proteggi il tuo capitale fornendo liquidità e generando *yield* per il sistema.</p>
+                    <a href="#" class="btn-contribute" data-address="0xLPB99...Mainnet">Fornisci Liquidità</a>
+                </div>
+                <div class="mode-card">
+                    <h3>3. PEACE STREAM (DAI/USDC)</h3>
+                    <p>Flessibilità e ricorrenza. Contribuisci continuamente da **$1 al giorno** via Superfluid.</p>
+                    <a href="#" class="btn-contribute" data-address="0xSTREAM...Mainnet">Avvia lo Streaming</a>
+                </div>
+            </div>
+            
+            <div class="treasury-address-info">
+                <p>Indirizzo Ufficiale Treasury V3 (ETH Standard): <code>0xSCV3F...Mainnet</code> <button onclick="copyAddress('0xSCV3F...Mainnet')">Copia Indirizzo</button></p>
+            </div>
+        </section>
+        
+        <section class="transparency-section">
+            <h2>TRASPARENZA FINANZIARIA (LOGICA PCE)</h2>
+            <div class="allocation-details">
+                <p>Il Smart Contract V3 esegue questa distribuzione automatica per ogni contributo:</p>
+                <ul>
+                    <li>**65%:** Core Team/Sviluppo LOGOS/VE</li>
+                    <li>**20%:** Infrastruttura Operativa/Gas Fee</li>
+                    <li>**10%:** Community Operations/Governance</li>
+                    <li>**5%:** Seedbringer (Compenso di Rischio Iniziale)</li>
+                </ul>
+            </div>
+            <p class="etherscan-links">Audit On-Chain: <a href="#">SC Treasury</a> | <a href="#">Gnosis Safe</a> | <a href="#">Token $\text{d}\mathbf{\delta}_E$</a></p>
+        </section>
+    </main>
+    
+    <script src="app.js"></script>
+</body>
+</p>
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Peace Bonds Treasury - Framework Euystacio</title>
     <script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js"></script>
     <style>
