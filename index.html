@@ -3,6 +3,729 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peace Bonds Treasury - Framework Euystacio</title>
+    <script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f1419 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(74, 158, 255, 0.3);
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #4a9eff 0%, #10b981 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 10px 25px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 25px;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(74, 158, 255, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .card-title {
+            font-size: 1.5em;
+            color: #4a9eff;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .wallet-address {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            word-break: break-all;
+            border: 1px solid #4a9eff;
+            margin: 10px 0;
+        }
+        
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            background: rgba(74, 158, 255, 0.1);
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        
+        .metric-label {
+            color: #a0d8f1;
+        }
+        
+        .metric-value {
+            font-weight: bold;
+            color: #10b981;
+            font-size: 1.2em;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 10px 0;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #4a9eff 0%, #2563eb 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(74, 158, 255, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.4);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .input-group {
+            margin: 15px 0;
+        }
+        
+        .input-group label {
+            display: block;
+            color: #a0d8f1;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #4a9eff;
+            border-radius: 8px;
+            color: #e0e0e0;
+            font-size: 1em;
+        }
+        
+        .transaction-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .transaction-item {
+            background: rgba(74, 158, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 4px solid #10b981;
+        }
+        
+        .transaction-hash {
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            color: #4a9eff;
+            word-break: break-all;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .alert-success {
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid #10b981;
+            color: #10b981;
+        }
+        
+        .alert-error {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid #ef4444;
+            color: #ef4444;
+        }
+        
+        .alert-info {
+            background: rgba(74, 158, 255, 0.2);
+            border: 1px solid #4a9eff;
+            color: #4a9eff;
+        }
+        
+        .network-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+        
+        .network-mainnet {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+        
+        .network-testnet {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat-card {
+            background: rgba(74, 158, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #4a9eff;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            color: #a0d8f1;
+            margin-top: 5px;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .loading.active {
+            display: block;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(74, 158, 255, 0.2);
+            border-top: 4px solid #4a9eff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>💰 Peace Bonds Treasury</h1>
+            <div style="color: #a0d8f1; margin-top: 10px;">Framework Euystacio - Sistema di Finanziamento Etico</div>
+            <div class="status-badge">● KOSYMBIOSIS ATTIVO</div>
+        </div>
+        
+        <!-- Main Grid -->
+        <div class="grid">
+            <!-- Wallet Connection Card -->
+            <div class="card">
+                <div class="card-title">🔗 Connessione Wallet</div>
+                
+                <button id="connectBtn" class="btn btn-primary">
+                    Connetti MetaMask
+                </button>
+                
+                <div id="walletInfo" style="display: none;">
+                    <div class="alert alert-success">
+                        <strong>✓ Wallet Connesso</strong>
+                    </div>
+                    
+                    <div class="metric">
+                        <span class="metric-label">Network:</span>
+                        <span id="networkName" class="network-badge"></span>
+                    </div>
+                    
+                    <div class="metric">
+                        <span class="metric-label">Indirizzo:</span>
+                        <span id="userAddress" style="font-family: monospace; font-size: 0.8em;"></span>
+                    </div>
+                    
+                    <div class="metric">
+                        <span class="metric-label">Balance:</span>
+                        <span class="metric-value" id="userBalance">0.0000</span> ETH
+                    </div>
+                </div>
+                
+                <div id="walletError" class="alert alert-error" style="display: none;"></div>
+            </div>
+            
+            <!-- Treasury Info Card -->
+            <div class="card">
+                <div class="card-title">🏛️ Treasury Euystacio</div>
+                
+                <div style="margin-bottom: 15px;">
+                    <strong style="color: #a0d8f1;">Indirizzo Treasury:</strong>
+                    <div class="wallet-address">
+                        0x5d61a4B25034393A37ef9307C8Ba3aE99e49944b
+                    </div>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="treasuryBalance">0.0</div>
+                        <div class="stat-label">ETH Balance</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalRaised">$0</div>
+                        <div class="stat-label">Totale Raccolto</div>
+                    </div>
+                </div>
+                
+                <button id="refreshTreasuryBtn" class="btn btn-primary" style="margin-top: 15px;">
+                    🔄 Aggiorna Dati
+                </button>
+            </div>
+            
+            <!-- Contribution Card -->
+            <div class="card">
+                <div class="card-title">💎 Contribuisci ai Peace Bonds</div>
+                
+                <div class="input-group">
+                    <label>Importo (ETH)</label>
+                    <input type="number" id="contributionAmount" placeholder="0.01" step="0.001" min="0.001">
+                </div>
+                
+                <div class="input-group">
+                    <label>Messaggio (opzionale)</label>
+                    <input type="text" id="contributionMessage" placeholder="Per NaturaGaia...">
+                </div>
+                
+                <div class="alert alert-info">
+                    <strong>Impatto Etico:</strong><br>
+                    0.01 ETH ≈ Accesso IP per 5 persone<br>
+                    0.1 ETH ≈ Accesso IP per 50 persone<br>
+                    1.0 ETH ≈ Accesso IP per 500 persone
+                </div>
+                
+                <button id="contributeBtn" class="btn btn-success" disabled>
+                    Invia Contributo
+                </button>
+                
+                <div id="contributionStatus" style="margin-top: 15px;"></div>
+            </div>
+        </div>
+        
+        <!-- Transaction History -->
+        <div class="card">
+            <div class="card-title">📜 Storia Transazioni</div>
+            
+            <div class="loading" id="txLoading">
+                <div class="spinner"></div>
+                <p style="margin-top: 10px;">Caricamento transazioni...</p>
+            </div>
+            
+            <div id="transactionList" class="transaction-list">
+                <!-- Le transazioni verranno caricate qui -->
+            </div>
+        </div>
+        
+        <!-- Peace Bonds Stats -->
+        <div class="card">
+            <div class="card-title">📊 Statistiche Peace Bonds</div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalContributors">0</div>
+                    <div class="stat-label">Contributori</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-value" id="totalTransactions">0</div>
+                    <div class="stat-label">Transazioni</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-value" id="ethicalImpact">0</div>
+                    <div class="stat-label">Persone con Accesso IP</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-value" id="avgContribution">0.00</div>
+                    <div class="stat-label">Media ETH</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Configurazione
+        const TREASURY_ADDRESS = '0x5d61a4B25034393A37ef9307C8Ba3aE99e49944b';
+        const ETHICAL_IMPACT_RATE = 50; // 50 persone per 0.1 ETH
+        
+        // Variabili globali
+        let provider;
+        let signer;
+        let userAddress;
+        let ethPrice = 2000; // Prezzo ETH in USD (da aggiornare con API reale)
+        
+        // Inizializzazione
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Controlla se MetaMask è installato
+            if (typeof window.ethereum !== 'undefined') {
+                console.log('MetaMask rilevato');
+                
+                // Carica dati treasury anche senza connessione
+                await loadTreasuryData();
+                
+                // Aggiorna prezzo ETH
+                await updateEthPrice();
+            } else {
+                document.getElementById('walletError').textContent = 
+                    '⚠️ MetaMask non rilevato. Installa MetaMask per interagire con il Treasury.';
+                document.getElementById('walletError').style.display = 'block';
+            }
+            
+            // Event listeners
+            document.getElementById('connectBtn').addEventListener('click', connectWallet);
+            document.getElementById('contributeBtn').addEventListener('click', sendContribution);
+            document.getElementById('refreshTreasuryBtn').addEventListener('click', loadTreasuryData);
+            document.getElementById('contributionAmount').addEventListener('input', updateImpactPreview);
+        });
+        
+        // Connessione Wallet
+        async function connectWallet() {
+            try {
+                const accounts = await window.ethereum.request({ 
+                    method: 'eth_requestAccounts' 
+                });
+                
+                provider = new ethers.providers.Web3Provider(window.ethereum);
+                signer = provider.getSigner();
+                userAddress = accounts[0];
+                
+                // Mostra info wallet
+                document.getElementById('walletInfo').style.display = 'block';
+                document.getElementById('connectBtn').style.display = 'none';
+                
+                // Aggiorna dati
+                await updateWalletInfo();
+                
+                // Abilita bottone contributo
+                document.getElementById('contributeBtn').disabled = false;
+                
+                // Listener per cambio account
+                window.ethereum.on('accountsChanged', handleAccountsChanged);
+                window.ethereum.on('chainChanged', handleChainChanged);
+                
+            } catch (error) {
+                console.error('Errore connessione wallet:', error);
+                showError('Errore di connessione: ' + error.message);
+            }
+        }
+        
+        // Aggiorna info wallet
+        async function updateWalletInfo() {
+            try {
+                // Network
+                const network = await provider.getNetwork();
+                const networkBadge = document.getElementById('networkName');
+                networkBadge.textContent = network.name === 'homestead' ? 'Ethereum Mainnet' : network.name;
+                networkBadge.className = 'network-badge ' + 
+                    (network.chainId === 1 ? 'network-mainnet' : 'network-testnet');
+                
+                // Address
+                document.getElementById('userAddress').textContent = 
+                    userAddress.substring(0, 6) + '...' + userAddress.substring(38);
+                
+                // Balance
+                const balance = await provider.getBalance(userAddress);
+                const balanceInEth = ethers.utils.formatEther(balance);
+                document.getElementById('userBalance').textContent = 
+                    parseFloat(balanceInEth).toFixed(4);
+                
+            } catch (error) {
+                console.error('Errore aggiornamento wallet:', error);
+            }
+        }
+        
+        // Carica dati Treasury
+        async function loadTreasuryData() {
+            try {
+                // Usa provider pubblico se non connesso
+                const pubProvider = provider || new ethers.providers.JsonRpcProvider(
+                    'https://eth-mainnet.g.alchemy.com/v2/demo'
+                );
+                
+                // Balance Treasury
+                const balance = await pubProvider.getBalance(TREASURY_ADDRESS);
+                const balanceInEth = ethers.utils.formatEther(balance);
+                document.getElementById('treasuryBalance').textContent = 
+                    parseFloat(balanceInEth).toFixed(4);
+                
+                // Totale in USD
+                const totalUsd = parseFloat(balanceInEth) * ethPrice;
+                document.getElementById('totalRaised').textContent = 
+                    '$' + totalUsd.toLocaleString('en-US', { maximumFractionDigits: 0 });
+                
+                // Carica transazioni
+                await loadTransactions();
+                
+            } catch (error) {
+                console.error('Errore caricamento treasury:', error);
+                showError('Errore caricamento dati treasury');
+            }
+        }
+        
+        // Carica transazioni
+        async function loadTransactions() {
+            try {
+                document.getElementById('txLoading').classList.add('active');
+                
+                // Usa Etherscan API (richiede API key per produzione)
+                const apiUrl = `https://api.etherscan.io/api?module=account&action=txlist&address=${TREASURY_ADDRESS}&startblock=0&endblock=99999999&sort=desc&apikey=YourApiKeyToken`;
+                
+                // Per demo, usa dati simulati
+                const transactions = [
+                    {
+                        hash: '0x1234...5678',
+                        from: '0xabcd...ef01',
+                        value: '1000000000000000000', // 1 ETH
+                        timeStamp: Math.floor(Date.now() / 1000) - 3600
+                    }
+                ];
+                
+                displayTransactions(transactions);
+                updateStats(transactions);
+                
+                document.getElementById('txLoading').classList.remove('active');
+                
+            } catch (error) {
+                console.error('Errore caricamento transazioni:', error);
+                document.getElementById('txLoading').classList.remove('active');
+            }
+        }
+        
+        // Mostra transazioni
+        function displayTransactions(transactions) {
+            const container = document.getElementById('transactionList');
+            
+            if (transactions.length === 0) {
+                container.innerHTML = '<div class="alert alert-info">Nessuna transazione ancora</div>';
+                return;
+            }
+            
+            container.innerHTML = transactions.map(tx => {
+                const valueEth = ethers.utils.formatEther(tx.value);
+                const date = new Date(tx.timeStamp * 1000).toLocaleString('it-IT');
+                const impact = Math.floor(parseFloat(valueEth) * ETHICAL_IMPACT_RATE / 0.1);
+                
+                return `
+                    <div class="transaction-item">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <strong style="color: #10b981;">+${parseFloat(valueEth).toFixed(4)} ETH</strong>
+                            <span style="color: #888; font-size: 0.9em;">${date}</span>
+                        </div>
+                        <div style="margin-bottom: 5px;">
+                            <strong>Da:</strong> <span class="transaction-hash">${tx.from}</span>
+                        </div>
+                        <div class="transaction-hash">
+                            Hash: ${tx.hash}
+                        </div>
+                        <div style="margin-top: 10px; color: #4a9eff;">
+                            💡 Impatto: ~${impact} persone con accesso IP
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // Aggiorna statistiche
+        function updateStats(transactions) {
+            const uniqueContributors = new Set(transactions.map(tx => tx.from)).size;
+            const totalTx = transactions.length;
+            const totalEth = transactions.reduce((sum, tx) => 
+                sum + parseFloat(ethers.utils.formatEther(tx.value)), 0
+            );
+            const avgEth = totalTx > 0 ? totalEth / totalTx : 0;
+            const totalImpact = Math.floor(totalEth * ETHICAL_IMPACT_RATE / 0.1);
+            
+            document.getElementById('totalContributors').textContent = uniqueContributors;
+            document.getElementById('totalTransactions').textContent = totalTx;
+            document.getElementById('ethicalImpact').textContent = totalImpact;
+            document.getElementById('avgContribution').textContent = avgEth.toFixed(4);
+        }
+        
+        // Invia contributo
+        async function sendContribution() {
+            try {
+                const amount = document.getElementById('contributionAmount').value;
+                const message = document.getElementById('contributionMessage').value;
+                
+                if (!amount || parseFloat(amount) <= 0) {
+                    showError('Inserisci un importo valido');
+                    return;
+                }
+                
+                // Mostra loading
+                const statusDiv = document.getElementById('contributionStatus');
+                statusDiv.innerHTML = '<div class="alert alert-info">⏳ Processando transazione...</div>';
+                
+                // Prepara transazione
+                const tx = await signer.sendTransaction({
+                    to: TREASURY_ADDRESS,
+                    value: ethers.utils.parseEther(amount)
+                });
+                
+                statusDiv.innerHTML = '<div class="alert alert-info">⏳ Attendere conferma blockchain...</div>';
+                
+                // Attendi conferma
+                const receipt = await tx.wait();
+                
+                // Successo
+                const impact = Math.floor(parseFloat(amount) * ETHICAL_IMPACT_RATE / 0.1);
+                statusDiv.innerHTML = `
+                    <div class="alert alert-success">
+                        <strong>✅ Transazione Completata!</strong><br>
+                        Hash: ${receipt.transactionHash}<br>
+                        Impatto Etico: ~${impact} persone con accesso IP
+                    </div>
+                `;
+                
+                // Reset form
+                document.getElementById('contributionAmount').value = '';
+                document.getElementById('contributionMessage').value = '';
+                
+                // Aggiorna dati
+                await loadTreasuryData();
+                await updateWalletInfo();
+                
+            } catch (error) {
+                console.error('Errore transazione:', error);
+                showError('Errore nella transazione: ' + error.message);
+            }
+        }
+        
+        // Aggiorna preview impatto
+        function updateImpactPreview() {
+            const amount = document.getElementById('contributionAmount').value;
+            if (amount && parseFloat(amount) > 0) {
+                const impact = Math.floor(parseFloat(amount) * ETHICAL_IMPACT_RATE / 0.1);
+                // Potresti aggiungere un indicatore visivo qui
+            }
+        }
+        
+        // Aggiorna prezzo ETH
+        async function updateEthPrice() {
+            try {
+                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
+                const data = await response.json();
+                ethPrice = data.ethereum.usd;
+            } catch (error) {
+                console.error('Errore recupero prezzo ETH:', error);
+            }
+        }
+        
+        // Handler cambio account
+        function handleAccountsChanged(accounts) {
+            if (accounts.length === 0) {
+                // Disconnesso
+                document.getElementById('walletInfo').style.display = 'none';
+                document.getElementById('connectBtn').style.display = 'block';
+                document.getElementById('contributeBtn').disabled = true;
+            } else {
+                userAddress = accounts[0];
+                updateWalletInfo();
+            }
+        }
+        
+        // Handler cambio network
+        function handleChainChanged() {
+            window.location.reload();
+        }
+        
+        // Mostra errore
+        function showError(message) {
+            const statusDiv = document.getElementById('contributionStatus');
+            statusDiv.innerHTML = `<div class="alert alert-error">${message}</div>`;
+        }
+        
+        // Auto-refresh ogni 30 secondi
+        setInterval(() => {
+            if (provider) {
+                loadTreasuryData();
+                if (userAddress) {
+                    updateWalletInfo();
+                }
+            }
+        }, 30000);
+    </script>
+<\p
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🤝 Peace Bonds: L'Investimento Etico Inevitabile | Euystacio Framework</title>
     <meta name="description" content="Investi nel Deficit Etico Storico. Garantito dal Dividendo Etico Perpetuo (δE = 0.027). Finanzia la Condivisione Anticipata.">
     <style>
