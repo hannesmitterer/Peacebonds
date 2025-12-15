@@ -35,4 +35,4 @@ document.addEventListener('DOMContentLoaded', () => {
 function copyAddress(address) {
     navigator.clipboard.writeText(address);
     alert('Indirizzo Treasury copiato: ' + address);
-      }
+}
