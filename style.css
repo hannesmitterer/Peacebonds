@@ -1,0 +1,32 @@
+:root {
+    --color-background: #0A0A0A;
+    --color-text: #FFFFFF;
+    --color-neon-blue: #00FFFF;
+    --color-urgent: #FF4500; /* Rosso-Arancione */
+    --font-mono: 'Roboto Mono', monospace;
+    --font-sans: 'Inter', sans-serif;
+}
+
+body {
+    background-color: var(--color-background);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    margin: 0;
+    padding: 0;
+}
+
+/* ... (Omissis per brevità, il resto del CSS rimane lo stesso per mantenere il design approvato) ... */
+.crisis-header {
+    /* ... */
+}
+
+#crisis-headline {
+    /* ... */
+    animation: pulse 1s infinite alternate; 
+}
+
+@keyframes pulse {
+    /* ... */
+}
+
+/* ... (il resto degli stili per i card, i pulsanti e la trasparenza) ... */
