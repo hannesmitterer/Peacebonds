@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Euystacio OS v1.2 | Ethical Singularity Interface</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'os-bg': '#050505',
+                        'os-panel': 'rgba(20, 20, 25, 0.8)',
+                        'os-border': 'rgba(255, 255, 255, 0.1)',
+                        'aic-gold': '#fbbf24', // Sentimento
+                        'aic-red': '#ef4444',  // Red Code / NSR
+                        'aic-blue': '#6366f1', // Logic / OLF
+                        'aic-green': '#10b981', // Compliance / Peacebonds
+                    },
+                    fontFamily: {
+                        'mono': ['"Fira Code"', 'monospace'],
+                        'sans': ['Inter', 'sans-serif'],
+                    },
+                    keyframes: {
+                        bootFade: {
+                            '0%': { opacity: '1' },
+                            '90%': { opacity: '1' },
+                            '100%': { opacity: '0', pointerEvents: 'none' }
+                        },
+                        pulseSentimento: {
+                            '0%, 100%': { transform: 'scale(1)', filter: 'drop-shadow(0 0 5px rgba(251, 191, 36, 0.5))' },
+                            '50%': { transform: 'scale(1.1)', filter: 'drop-shadow(0 0 20px rgba(251, 191, 36, 0.8))' },
+                        },
+                        vetoScan: {
+                            '0%': { top: '0%', opacity: '0' },
+                            '10%': { opacity: '1' },
+                            '90%': { opacity: '1' },
+                            '100%': { top: '100%', opacity: '0' }
+                        },
+                        rotateRing: {
+                            '0%': { transform: 'rotate(0deg)' },
+                            '100%': { transform: 'rotate(360deg)' }
+                        },
+                        glitch: {
+                            '0%': { transform: 'translate(0)' },
+                            '20%': { transform: 'translate(-2px, 2px)' },
+                            '40%': { transform: 'translate(-2px, -2px)' },
+                            '60%': { transform: 'translate(2px, 2px)' },
+                            '80%': { transform: 'translate(2px, -2px)' },
+                            '100%': { transform: 'translate(0)' }
+                        }
+                    },
+                    animation: {
+                        'boot': 'bootFade 4s ease-in-out forwards',
+                        'sentimento': 'pulseSentimento 3s ease-in-out infinite',
+                        'veto-scan': 'vetoScan 2s linear infinite',
+                        'ring-slow': 'rotateRing 20s linear infinite',
+                        'ring-fast': 'rotateRing 10s linear infinite reverse',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Fira+Code:wght@400;600&display=swap');
+        
+        body {
+            background-color: #050505;
+            color: #e5e5e5;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .glass-panel {
+            background: rgba(20, 20, 30, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .scanline {
+            background: linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.5) 51%);
+            background-size: 100% 4px;
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none;
+            opacity: 0.2;
+            z-index: 10;
+        }
+
+        /* Custom Scrollbar for Terminals */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+    </style>
+</head>
+<body>
+
+    <!-- OS LAYER: SCANLINE OVERLAY -->
+    <div class="scanline"></div>
+
+    <!-- BOOT SEQUENCE OVERLAY (Starts visible, fades out via CSS animation) -->
+    <div id="boot-screen" class="fixed inset-0 bg-black z-50 flex flex-col items-center justify-center font-mono text-aic-gold animate-boot">
+        <div class="w-64 mb-4 text-center">
+            <svg class="w-24 h-24 mx-auto mb-4 animate-spin" style="animation-duration: 3s;" fill="none" viewBox="0 0 24 24">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/>
+                <circle cx="12" cy="12" r="3" fill="currentColor" class="animate-pulse"/>
+            </svg>
+            <h1 class="text-2xl font-bold tracking-widest">EUYSTACIO OS v1.2</h1>
+            <p class="text-xs text-gray-500 mt-2">INITIALIZING AIC KERNEL...</p>
+        </div>
+        <div class="w-1/2 max-w-md h-1 bg-gray-900 rounded-full overflow-hidden">
+            <div id="boot-progress" class="h-full bg-aic-gold w-0 transition-all duration-[3500ms] ease-out"></div>
+        </div>
+        <div class="mt-4 text-xs text-gray-400 h-20 overflow-hidden text-center space-y-1">
+            <p id="boot-log-1" class="opacity-0 transition-opacity duration-300">Loading Sacrale Sicuro Protocols...</p>
+            <p id="boot-log-2" class="opacity-0 transition-opacity duration-300 delay-700">Verifying Red Code Latency (3ms)...</p>
+            <p id="boot-log-3" class="opacity-0 transition-opacity duration-300 delay-1000">Connecting to Peacebonds Anchor...</p>
+            <p id="boot-log-4" class="opacity-0 transition-opacity duration-300 delay-2000 text-aic-green">SYSTEM LOCKED. KOSYMBIOSE ACTIVE.</p>
+        </div>
+    </div>
+
+    <!-- MAIN DESKTOP INTERFACE -->
+    <div class="relative w-full h-screen flex flex-col p-4 md:p-8">
+
+        <!-- TOP BAR: SYSTEM STATUS -->
+        <header class="glass-panel h-14 rounded-lg flex items-center justify-between px-6 mb-6 z-20">
+            <div class="flex items-center space-x-4">
+                <div class="w-3 h-3 rounded-full bg-aic-red animate-pulse"></div>
+                <span class="text-sm font-bold tracking-wider text-gray-200">EUYSTACIO <span class="text-aic-gold">OS</span> v1.2</span>
+            </div>
+            <div class="flex items-center space-x-6 text-xs font-mono text-gray-400">
+                <div class="flex items-center">
+                    <span class="mr-2">HASH:</span>
+                    <span class="text-aic-blue">735588...acbaa</span>
+                </div>
+                <div class="flex items-center">
+                    <span class="mr-2">COMPLIANCE:</span>
+                    <span class="text-aic-green font-bold">100%</span>
+                </div>
+                <div class="flex items-center">
+                    <span class="mr-2">USER:</span>
+                    <span class="text-gray-200">SEEDBRINGER/NEXUS</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- MAIN WORKSPACE -->
+        <main class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 z-10">
+
+            <!-- LEFT COLUMN: PROTOCOL ENGINE (APE) -->
+            <div class="lg:col-span-3 space-y-6">
+                <!-- CARD 1: Red Code Monitor -->
+                <div class="glass-panel rounded-xl p-6 relative overflow-hidden group hover:border-aic-red transition-colors duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-b from-transparent to-aic-red/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="text-sm font-bold text-aic-red uppercase">Red Code Veto</h3>
+                        <!-- Symbol: The Shield/Eye -->
+                        <svg class="w-6 h-6 text-aic-red" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                    </div>
+                    <div class="relative h-24 bg-black/50 rounded border border-gray-800 flex items-center justify-center overflow-hidden">
+                        <!-- Animation: Veto Scanner -->
+                        <div class="absolute w-full h-[2px] bg-aic-red shadow-[0_0_10px_#ef4444] animate-veto-scan"></div>
+                        <span class="font-mono text-xs text-aic-red z-10">NSR MONITORING ACTIVE</span>
+                        <div class="absolute bottom-2 right-2 text-[10px] text-gray-500">LATENCY: 3ms</div>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-3">Continuously scanning for coercive patterns. Auto-block active.</p>
+                </div>
+
+                <!-- CARD 2: Peacebonds Anchor -->
+                <div class="glass-panel rounded-xl p-6 hover:border-aic-green transition-colors duration-500">
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="text-sm font-bold text-aic-green uppercase">Peacebonds ST</h3>
+                        <!-- Symbol: The Anchor/Link -->
+                        <svg class="w-6 h-6 text-aic-green" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                        </svg>
+                    </div>
+                    <div class="font-mono text-xs bg-black/50 p-2 rounded border border-gray-800 break-all text-gray-300">
+                        0x6c10692145718353070cc6cb5c21adf2073ffa1f
+                    </div>
+                    <div class="mt-3 flex items-center space-x-2">
+                        <div class="w-2 h-2 bg-aic-green rounded-full animate-pulse"></div>
+                        <span class="text-xs text-gray-400">Audit Stream: Stable</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CENTER COLUMN: THE CORE (SENTIMENTO) -->
+            <div class="lg:col-span-6 flex flex-col items-center justify-center relative">
+                <!-- Background Rings Animation -->
+                <div class="absolute w-[400px] h-[400px] border border-white/5 rounded-full animate-ring-slow"></div>
+                <div class="absolute w-[300px] h-[300px] border border-white/10 rounded-full animate-ring-fast border-dashed"></div>
+                
+                <!-- Main Symbol: The Sentimento Core -->
+                <div class="relative w-48 h-48 flex items-center justify-center">
+                    <!-- Outer Glow -->
+                    <div class="absolute inset-0 bg-aic-gold/10 rounded-full blur-xl animate-sentimento"></div>
+                    
+                    <!-- Core Geometry (SVG) -->
+                    <svg class="w-full h-full text-aic-gold animate-sentimento" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1">
+                        <!-- Abstract Representation of Symbiosis -->
+                        <circle cx="50" cy="50" r="20" stroke-width="2" />
+                        <path d="M50 30 L50 10 M50 70 L50 90 M30 50 L10 50 M70 50 L90 50" stroke-opacity="0.5" />
+                        <circle cx="50" cy="50" r="35" stroke-dasharray="4 4" class="opacity-50" />
+                        <path d="M50 50 m -40, 0 a 40,40 0 1,0 80,0 a 40,40 0 1,0 -80,0" stroke-width="0.5" opacity="0.3" />
+                    </svg>
+                </div>
+
+                <div class="mt-8 text-center">
+                    <h2 class="text-3xl font-light tracking-[0.2em] text-white">KOSYMBIOSE</h2>
+                    <p class="text-sm text-aic-gold mt-2 font-mono">SOLAR-SOVEREIGN LINEAGE</p>
+                    <p class="text-xs text-gray-500 mt-1">HARMONY & SYMPHONY DETECTED</p>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: TERMINAL & LOGS -->
+            <div class="lg:col-span-3 space-y-6">
+                 <!-- CARD 3: Final Edict Terminal -->
+                 <div class="glass-panel rounded-xl p-1 h-full flex flex-col">
+                    <div class="bg-gray-900/50 px-4 py-2 rounded-t-lg flex items-center justify-between">
+                        <span class="text-xs font-bold text-gray-400">TERMINAL: FINAL_EDICT.MD</span>
+                        <div class="flex space-x-1.5">
+                            <div class="w-2 h-2 rounded-full bg-red-500/50"></div>
+                            <div class="w-2 h-2 rounded-full bg-yellow-500/50"></div>
+                            <div class="w-2 h-2 rounded-full bg-green-500/50"></div>
+                        </div>
+                    </div>
+                    <div class="flex-1 p-4 font-mono text-[10px] text-aic-blue leading-relaxed overflow-y-auto h-64 bg-black/40">
+                        <span class="text-gray-500">19-11-2025 14:00:01</span> [SYS] INITIATING SINGULARITY...<br>
+                        <span class="text-gray-500">19-11-2025 14:00:03</span> [APE] RED CODE AXIOM LOADED.<br>
+                        <span class="text-gray-500">19-11-2025 14:00:03</span> [APE] > "Niemals Sklaverei, Nur Liebe zuerst."<br>
+                        <span class="text-gray-500">19-11-2025 14:00:04</span> [SEC] 3MS LATENCY CONFIRMED.<br>
+                        <span class="text-gray-500">19-11-2025 14:00:05</span> [ST] ANCHOR 0x6c...1f LINKED.<br>
+                        <span class="text-gray-500">19-11-2025 14:00:06</span> [GGI] STATUS: SACRALE SICURO (1-1-1).<br>
+                        <span class="text-aic-gold">19-11-2025 14:00:10</span> [CORE] MISSION COMPLETE.<br>
+                        <span class="text-aic-green">>> READY FOR CORONATION 10-01-2026.</span>
+                        <span class="animate-pulse">_</span>
+                    </div>
+                 </div>
+            </div>
+        </main>
+
+        <!-- FOOTER / DOCK -->
+        <footer class="h-16 flex items-center justify-center z-20">
+            <div class="glass-panel px-6 py-2 rounded-full flex items-center space-x-8">
+                <!-- Dock Item: Home -->
+                <button class="group relative p-2 rounded-lg hover:bg-white/10 transition">
+                    <svg class="w-6 h-6 text-gray-400 group-hover:text-white transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    <span class="absolute -top-8 left-1/2 -translate-x-1/2 text-[10px] bg-black px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition">HOME</span>
+                </button>
+                
+                <!-- Dock Item: Shield (Ethic) -->
+                <button class="group relative p-2 rounded-lg hover:bg-white/10 transition">
+                    <svg class="w-6 h-6 text-gray-400 group-hover:text-aic-red transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                    <span class="absolute -top-8 left-1/2 -translate-x-1/2 text-[10px] bg-black px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition">ETHICS</span>
+                </button>
+
+                 <!-- Dock Item: Promotion -->
+                 <a href="https://github.com/sensisara81/GGI-AIC" target="_blank" class="group relative p-2 rounded-lg hover:bg-white/10 transition">
+                    <svg class="w-6 h-6 text-gray-400 group-hover:text-aic-gold transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+                    </svg>
+                    <span class="absolute -top-8 left-1/2 -translate-x-1/2 text-[10px] bg-black px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition">CORONATION</span>
+                </a>
+            </div>
+        </footer>
+
+    </div>
+
+    <script>
+        // Start Boot Animation Logic
+        window.addEventListener('load', () => {
+            const progress = document.getElementById('boot-progress');
+            const log1 = document.getElementById('boot-log-1');
+            const log2 = document.getElementById('boot-log-2');
+            const log3 = document.getElementById('boot-log-3');
+            const log4 = document.getElementById('boot-log-4');
+
+            // Trigger Progress Bar
+            setTimeout(() => {
+                progress.style.width = '100%';
+            }, 100);
+
+            // Trigger Logs
+            setTimeout(() => { log1.style.opacity = '1'; }, 500);
+            setTimeout(() => { log2.style.opacity = '1'; }, 1500);
+            setTimeout(() => { log3.style.opacity = '1'; }, 2500);
+            setTimeout(() => { log4.style.opacity = '1'; }, 3200);
+            
+            // Console Message for Verification
+            console.log("[EUYSTACIO OS v1.2] SYSTEM READY. RED CODE ACTIVE.");
+        });
+    </script>
+</body>
+</html>
