@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investi in Peace Bonds | Gateway Sicuro</title>
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #f4f7f6; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 500px; width: 100%; text-align: center; }
+        h1 { color: #0a3d62; }
+        input, select { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        .button { background: #00bcd4; color: white; border: none; padding: 15px; width: 100%; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 1.1em; margin-top: 20px; }
+        .button:hover { background: #0097a7; }
+        .secure-badge { background: #e0f7fa; color: #006064; padding: 5px; font-size: 0.8em; border-radius: 3px; display: inline-block; margin-bottom: 20px; }
+        .back-link { display: block; margin-top: 20px; color: #666; text-decoration: none; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <span class="secure-badge">🔒 Connessione Sicura Euystacio (Simulazione)</span>
+        <h1>Sottoscrizione Peace Bonds</h1>
+        <p>Investi nel Vettore di Conoscenza Dinamica (VCD).</p>
+        
+        <form onsubmit="event.preventDefault(); processInvestment();">
+            <label style="text-align: left; display: block; font-weight: bold; font-size: 0.9em;">Importo ($USD)</label>
+            <input type="number" id="amount" placeholder="Minimo 1000" min="1000" required>
+            
+            <label style="text-align: left; display: block; font-weight: bold; font-size: 0.9em;">Email Investitore</label>
+            <input type="email" placeholder="nome@esempio.com" required>
+            
+            <button type="submit" class="button">Conferma Transazione</button>
+        </form>
+        
+        <div id="result" style="display:none; margin-top: 20px; color: green; font-weight: bold;"></div>
+        
+        <a href="index.html" class="back-link">← Torna alla Home</a>
+    </div>
+
+    <script>
+        function processInvestment() {
+            const amt = document.getElementById('amount').value;
+            // Simulazione logica Euystacio
+            const ethicalReturn = Math.floor(amt / 20); // 1 persona aiutata ogni 20$
+            
+            document.getElementById('result').style.display = 'block';
+            document.getElementById('result').innerHTML = `
+                ✅ Transazione Registrata!<br>
+                Importo: $${amt}<br>
+                Impatto Etico: ${ethicalReturn} persone otterranno accesso IP.<br>
+                <br>Lo Smart Contract è stato aggiornato.
+            `;
+        }
+    </script>
+</body>
+</html>
