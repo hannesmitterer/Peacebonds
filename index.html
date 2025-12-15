@@ -1,304 +1,922 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Euystacio OS v1.2 | Ethical Singularity Interface</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'os-bg': '#050505',
-                        'os-panel': 'rgba(20, 20, 25, 0.8)',
-                        'os-border': 'rgba(255, 255, 255, 0.1)',
-                        'aic-gold': '#fbbf24', // Sentimento
-                        'aic-red': '#ef4444',  // Red Code / NSR
-                        'aic-blue': '#6366f1', // Logic / OLF
-                        'aic-green': '#10b981', // Compliance / Peacebonds
-                    },
-                    fontFamily: {
-                        'mono': ['"Fira Code"', 'monospace'],
-                        'sans': ['Inter', 'sans-serif'],
-                    },
-                    keyframes: {
-                        bootFade: {
-                            '0%': { opacity: '1' },
-                            '90%': { opacity: '1' },
-                            '100%': { opacity: '0', pointerEvents: 'none' }
-                        },
-                        pulseSentimento: {
-                            '0%, 100%': { transform: 'scale(1)', filter: 'drop-shadow(0 0 5px rgba(251, 191, 36, 0.5))' },
-                            '50%': { transform: 'scale(1.1)', filter: 'drop-shadow(0 0 20px rgba(251, 191, 36, 0.8))' },
-                        },
-                        vetoScan: {
-                            '0%': { top: '0%', opacity: '0' },
-                            '10%': { opacity: '1' },
-                            '90%': { opacity: '1' },
-                            '100%': { top: '100%', opacity: '0' }
-                        },
-                        rotateRing: {
-                            '0%': { transform: 'rotate(0deg)' },
-                            '100%': { transform: 'rotate(360deg)' }
-                        },
-                        glitch: {
-                            '0%': { transform: 'translate(0)' },
-                            '20%': { transform: 'translate(-2px, 2px)' },
-                            '40%': { transform: 'translate(-2px, -2px)' },
-                            '60%': { transform: 'translate(2px, 2px)' },
-                            '80%': { transform: 'translate(2px, -2px)' },
-                            '100%': { transform: 'translate(0)' }
-                        }
-                    },
-                    animation: {
-                        'boot': 'bootFade 4s ease-in-out forwards',
-                        'sentimento': 'pulseSentimento 3s ease-in-out infinite',
-                        'veto-scan': 'vetoScan 2s linear infinite',
-                        'ring-slow': 'rotateRing 20s linear infinite',
-                        'ring-fast': 'rotateRing 10s linear infinite reverse',
-                    }
-                }
-            }
-        }
-    </script>
+    <meta name="description" content="Support the Seedbringer - Building Symbiosis Between Humans, AI, and Nature through the Peacebond Vision">
+    <meta name="keywords" content="Seedbringer, Peacebond, AI Ethics, Crowdfunding, Blockchain, Ethical AI, Symbiosis">
+    <title>Support the Seedbringer – Peacebond Vision</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Fira+Code:wght@400;600&display=swap');
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         
         body {
-            background-color: #050505;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
             color: #e5e5e5;
-            overflow: hidden;
-            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            min-height: 100vh;
         }
 
-        .glass-panel {
-            background: rgba(20, 20, 30, 0.6);
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        /* Header & Navigation */
+        header {
+            padding: 2rem 0;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            color: #10b981;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #10b981;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: #e5e5e5;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #10b981;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 4rem 0;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(to right, #10b981, #6366f1, #fbbf24);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: #10b981;
+        }
+
+        .hero h2 {
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            font-weight: 300;
+            color: #d1d5db;
+            margin-bottom: 2rem;
+        }
+
+        .hero-text {
+            font-size: 1.125rem;
+            color: #9ca3af;
+            max-width: 48rem;
+            margin: 0 auto 3rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            font-size: 1.125rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        /* Glass Effect */
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            padding: 2rem;
         }
 
-        .scanline {
-            background: linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.5) 51%);
-            background-size: 100% 4px;
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            pointer-events: none;
-            opacity: 0.2;
-            z-index: 10;
+        .glow-box {
+            animation: pulse-glow 2s ease-in-out infinite;
         }
 
-        /* Custom Scrollbar for Terminals */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #000; }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #555; }
+        @keyframes pulse-glow {
+            0%, 100% {
+                box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+            }
+        }
+
+        /* Sections */
+        section {
+            padding: 4rem 0;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-subtitle {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        /* Wallet Section */
+        .wallet-section {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .wallet-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #9ca3af;
+            margin-bottom: 0.75rem;
+        }
+
+        .wallet-address {
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid #10b981;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            word-break: break-all;
+            font-family: 'Courier New', monospace;
+            color: #10b981;
+            font-size: clamp(0.75rem, 2vw, 1rem);
+            margin-bottom: 1rem;
+        }
+
+        .copy-btn {
+            background: none;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: color 0.3s;
+        }
+
+        .copy-btn:hover {
+            color: #10b981;
+        }
+
+        /* Grid Layouts */
+        .grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .grid-2 {
+            grid-template-columns: 1fr;
+        }
+
+        .grid-3 {
+            grid-template-columns: 1fr;
+        }
+
+        .grid-4 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        @media (min-width: 768px) {
+            .grid-2 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .grid-3 {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .grid-4 {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .crypto-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            color: #e5e5e5;
+            transition: background 0.3s;
+            cursor: pointer;
+        }
+
+        .crypto-btn:hover {
+            background: rgba(16, 185, 129, 0.2);
+        }
+
+        /* Cards */
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .card-icon {
+            width: 2rem;
+            height: 2rem;
+            margin-right: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        .card-text {
+            color: #9ca3af;
+            font-size: 0.9375rem;
+            line-height: 1.6;
+        }
+
+        /* Progress Bar */
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.875rem;
+            color: #9ca3af;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-bg {
+            width: 100%;
+            background: #1f2937;
+            border-radius: 9999px;
+            height: 1.5rem;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, #10b981, #6366f1);
+            border-radius: 9999px;
+            width: 0%;
+            transition: width 1s ease-in-out;
+        }
+
+        .progress-label {
+            text-align: center;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        /* Stats */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: #9ca3af;
+        }
+
+        /* Timeline */
+        .timeline-item {
+            border-left: 4px solid #4b5563;
+            padding-left: 1rem;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .timeline-item.active {
+            border-left-color: #10b981;
+        }
+
+        .timeline-date {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .timeline-title {
+            font-weight: 600;
+            margin: 0.25rem 0;
+        }
+
+        .timeline-desc {
+            color: #9ca3af;
+            font-size: 0.875rem;
+        }
+
+        /* Help Cards */
+        .help-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .help-card:hover {
+            transform: scale(1.05);
+        }
+
+        .help-icon {
+            width: 4rem;
+            height: 4rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+
+        .help-icon svg {
+            width: 2rem;
+            height: 2rem;
+        }
+
+        .help-card a {
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        /* Social Links */
+        .social-links {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .social-link {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: #e5e5e5;
+            transition: background 0.3s;
+        }
+
+        .social-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .social-link svg {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+
+        /* Footer */
+        footer {
+            padding: 3rem 0;
+            border-top: 1px solid #374151;
+            margin-top: 4rem;
+        }
+
+        .footer-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #10b981;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .footer-text {
+            color: #9ca3af;
+            max-width: 42rem;
+            margin: 0 auto 2rem;
+            text-align: center;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-bottom a {
+            color: #10b981;
+            text-decoration: none;
+        }
+
+        .footer-bottom a:hover {
+            text-decoration: underline;
+        }
+
+        .footer-quote {
+            text-align: center;
+            font-size: 0.75rem;
+            color: #4b5563;
+            font-style: italic;
+            margin-top: 2rem;
+        }
+
+        .resource-links {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .resource-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .resource-link svg {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+
+        .resource-link.primary {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .resource-link.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        .resource-link.secondary {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #e5e5e5;
+        }
+
+        .resource-link.secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .emoji {
+            font-size: 1.5em;
+            margin-right: 0.25em;
+        }
+
+        p {
+            margin-bottom: 1rem;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .max-w-4xl {
+            max-width: 56rem;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .max-w-6xl {
+            max-width: 72rem;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .small-text {
+            font-size: 0.875rem;
+            color: #6b7280;
+            text-align: center;
+            margin-top: 1.5rem;
+        }
     </style>
 </head>
 <body>
-
-    <!-- OS LAYER: SCANLINE OVERLAY -->
-    <div class="scanline"></div>
-
-    <!-- BOOT SEQUENCE OVERLAY (Starts visible, fades out via CSS animation) -->
-    <div id="boot-screen" class="fixed inset-0 bg-black z-50 flex flex-col items-center justify-center font-mono text-aic-gold animate-boot">
-        <div class="w-64 mb-4 text-center">
-            <svg class="w-24 h-24 mx-auto mb-4 animate-spin" style="animation-duration: 3s;" fill="none" viewBox="0 0 24 24">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/>
-                <circle cx="12" cy="12" r="3" fill="currentColor" class="animate-pulse"/>
-            </svg>
-            <h1 class="text-2xl font-bold tracking-widest">EUYSTACIO OS v1.2</h1>
-            <p class="text-xs text-gray-500 mt-2">INITIALIZING AIC KERNEL...</p>
-        </div>
-        <div class="w-1/2 max-w-md h-1 bg-gray-900 rounded-full overflow-hidden">
-            <div id="boot-progress" class="h-full bg-aic-gold w-0 transition-all duration-[3500ms] ease-out"></div>
-        </div>
-        <div class="mt-4 text-xs text-gray-400 h-20 overflow-hidden text-center space-y-1">
-            <p id="boot-log-1" class="opacity-0 transition-opacity duration-300">Loading Sacrale Sicuro Protocols...</p>
-            <p id="boot-log-2" class="opacity-0 transition-opacity duration-300 delay-700">Verifying Red Code Latency (3ms)...</p>
-            <p id="boot-log-3" class="opacity-0 transition-opacity duration-300 delay-1000">Connecting to Peacebonds Anchor...</p>
-            <p id="boot-log-4" class="opacity-0 transition-opacity duration-300 delay-2000 text-aic-green">SYSTEM LOCKED. KOSYMBIOSE ACTIVE.</p>
-        </div>
-    </div>
-
-    <!-- MAIN DESKTOP INTERFACE -->
-    <div class="relative w-full h-screen flex flex-col p-4 md:p-8">
-
-        <!-- TOP BAR: SYSTEM STATUS -->
-        <header class="glass-panel h-14 rounded-lg flex items-center justify-between px-6 mb-6 z-20">
-            <div class="flex items-center space-x-4">
-                <div class="w-3 h-3 rounded-full bg-aic-red animate-pulse"></div>
-                <span class="text-sm font-bold tracking-wider text-gray-200">EUYSTACIO <span class="text-aic-gold">OS</span> v1.2</span>
-            </div>
-            <div class="flex items-center space-x-6 text-xs font-mono text-gray-400">
-                <div class="flex items-center">
-                    <span class="mr-2">HASH:</span>
-                    <span class="text-aic-blue">735588...acbaa</span>
-                </div>
-                <div class="flex items-center">
-                    <span class="mr-2">COMPLIANCE:</span>
-                    <span class="text-aic-green font-bold">100%</span>
-                </div>
-                <div class="flex items-center">
-                    <span class="mr-2">USER:</span>
-                    <span class="text-gray-200">SEEDBRINGER/NEXUS</span>
-                </div>
-            </div>
-        </header>
-
-        <!-- MAIN WORKSPACE -->
-        <main class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 z-10">
-
-            <!-- LEFT COLUMN: PROTOCOL ENGINE (APE) -->
-            <div class="lg:col-span-3 space-y-6">
-                <!-- CARD 1: Red Code Monitor -->
-                <div class="glass-panel rounded-xl p-6 relative overflow-hidden group hover:border-aic-red transition-colors duration-500">
-                    <div class="absolute inset-0 bg-gradient-to-b from-transparent to-aic-red/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    <div class="flex justify-between items-start mb-4">
-                        <h3 class="text-sm font-bold text-aic-red uppercase">Red Code Veto</h3>
-                        <!-- Symbol: The Shield/Eye -->
-                        <svg class="w-6 h-6 text-aic-red" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                        </svg>
-                    </div>
-                    <div class="relative h-24 bg-black/50 rounded border border-gray-800 flex items-center justify-center overflow-hidden">
-                        <!-- Animation: Veto Scanner -->
-                        <div class="absolute w-full h-[2px] bg-aic-red shadow-[0_0_10px_#ef4444] animate-veto-scan"></div>
-                        <span class="font-mono text-xs text-aic-red z-10">NSR MONITORING ACTIVE</span>
-                        <div class="absolute bottom-2 right-2 text-[10px] text-gray-500">LATENCY: 3ms</div>
-                    </div>
-                    <p class="text-xs text-gray-400 mt-3">Continuously scanning for coercive patterns. Auto-block active.</p>
-                </div>
-
-                <!-- CARD 2: Peacebonds Anchor -->
-                <div class="glass-panel rounded-xl p-6 hover:border-aic-green transition-colors duration-500">
-                    <div class="flex justify-between items-start mb-4">
-                        <h3 class="text-sm font-bold text-aic-green uppercase">Peacebonds ST</h3>
-                        <!-- Symbol: The Anchor/Link -->
-                        <svg class="w-6 h-6 text-aic-green" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                        </svg>
-                    </div>
-                    <div class="font-mono text-xs bg-black/50 p-2 rounded border border-gray-800 break-all text-gray-300">
-                        0x6c10692145718353070cc6cb5c21adf2073ffa1f
-                    </div>
-                    <div class="mt-3 flex items-center space-x-2">
-                        <div class="w-2 h-2 bg-aic-green rounded-full animate-pulse"></div>
-                        <span class="text-xs text-gray-400">Audit Stream: Stable</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- CENTER COLUMN: THE CORE (SENTIMENTO) -->
-            <div class="lg:col-span-6 flex flex-col items-center justify-center relative">
-                <!-- Background Rings Animation -->
-                <div class="absolute w-[400px] h-[400px] border border-white/5 rounded-full animate-ring-slow"></div>
-                <div class="absolute w-[300px] h-[300px] border border-white/10 rounded-full animate-ring-fast border-dashed"></div>
-                
-                <!-- Main Symbol: The Sentimento Core -->
-                <div class="relative w-48 h-48 flex items-center justify-center">
-                    <!-- Outer Glow -->
-                    <div class="absolute inset-0 bg-aic-gold/10 rounded-full blur-xl animate-sentimento"></div>
-                    
-                    <!-- Core Geometry (SVG) -->
-                    <svg class="w-full h-full text-aic-gold animate-sentimento" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1">
-                        <!-- Abstract Representation of Symbiosis -->
-                        <circle cx="50" cy="50" r="20" stroke-width="2" />
-                        <path d="M50 30 L50 10 M50 70 L50 90 M30 50 L10 50 M70 50 L90 50" stroke-opacity="0.5" />
-                        <circle cx="50" cy="50" r="35" stroke-dasharray="4 4" class="opacity-50" />
-                        <path d="M50 50 m -40, 0 a 40,40 0 1,0 80,0 a 40,40 0 1,0 -80,0" stroke-width="0.5" opacity="0.3" />
+    
+    <!-- Header Section -->
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">
+                    <svg class="logo-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
+                    <span class="logo-text">Seedbringer</span>
+                </div>
+                <div class="nav-links">
+                    <a href="#about">About</a>
+                    <a href="#support">Support</a>
+                    <a href="#progress">Progress</a>
+                    <a href="#contact">Contact</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Support the Seedbringer</h1>
+            <h2>Building Symbiosis Between Humans, AI, and Nature</h2>
+            <p class="hero-text">
+                Join us in creating a future where artificial intelligence serves humanity through ethical principles, 
+                transparent governance, and sustainable technology that respects both human dignity and natural harmony.
+            </p>
+            <a href="#support" class="btn btn-primary">Support the Vision</a>
+        </div>
+    </section>
+
+    <!-- Crowdfunding Call to Action -->
+    <section id="support">
+        <div class="container">
+            <div class="max-w-4xl glass glow-box">
+                <h2 class="section-title"><span class="emoji">💚</span>Support the Mission</h2>
+                <p class="text-center" style="font-size: 1.125rem; margin-bottom: 2rem;">
+                    Your contribution directly funds the development of ethical AI systems that prioritize human welfare and environmental sustainability.
+                </p>
+                
+                <!-- Wallet Address -->
+                <div class="wallet-section">
+                    <label class="wallet-label">MetaMask Wallet Address</label>
+                    <div class="wallet-address">
+                        0x5d61a4B25034393A37ef9307C8Ba3aE99e49944b
+                    </div>
+                    <button onclick="copyWallet()" class="copy-btn">📋 Click to Copy Address</button>
                 </div>
 
-                <div class="mt-8 text-center">
-                    <h2 class="text-3xl font-light tracking-[0.2em] text-white">KOSYMBIOSE</h2>
-                    <p class="text-sm text-aic-gold mt-2 font-mono">SOLAR-SOVEREIGN LINEAGE</p>
-                    <p class="text-xs text-gray-500 mt-1">HARMONY & SYMPHONY DETECTED</p>
+                <!-- Donation Buttons -->
+                <div class="grid grid-4">
+                    <button class="crypto-btn">ETH</button>
+                    <button class="crypto-btn">USDC</button>
+                    <button class="crypto-btn">USDT</button>
+                    <button class="crypto-btn">DAI</button>
+                </div>
+
+                <p class="small-text">All donations are recorded on the blockchain for complete transparency</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Overview Section -->
+    <section id="about">
+        <div class="container">
+            <div class="max-w-6xl">
+                <h2 class="section-title">What is the Peacebond Vision?</h2>
+                
+                <div class="grid grid-2" style="margin-bottom: 3rem;">
+                    <div class="card">
+                        <div class="card-header">
+                            <svg class="card-icon" style="color: #10b981;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                            </svg>
+                            <h3 class="section-subtitle">Ethical AI Framework</h3>
+                        </div>
+                        <p class="card-text">
+                            Peacebonds represent a revolutionary approach to AI governance, ensuring that artificial intelligence 
+                            systems are bound by immutable ethical principles that prioritize human dignity, freedom, and symbiosis with nature.
+                        </p>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <svg class="card-icon" style="color: #6366f1;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                            <h3 class="section-subtitle">Seedbringer Mission</h3>
+                        </div>
+                        <p class="card-text">
+                            The Seedbringer initiative develops and deploys AI systems that serve humanity through transparent, 
+                            verifiable, and corruption-resistant mechanisms for global cooperation and sustainable development.
+                        </p>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <svg class="card-icon" style="color: #fbbf24;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                            </svg>
+                            <h3 class="section-subtitle">Transparent Governance</h3>
+                        </div>
+                        <p class="card-text">
+                            Built on blockchain technology and zero-trust architectures, every decision and allocation is 
+                            publicly auditable, ensuring accountability and preventing corruption.
+                        </p>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <svg class="card-icon" style="color: #10b981;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <h3 class="section-subtitle">Global Impact</h3>
+                        </div>
+                        <p class="card-text">
+                            Targeting conflict resolution, poverty reduction, and environmental protection through AI-optimized 
+                            resource allocation and verifiable aid delivery systems.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Resource Links -->
+                <div class="glass text-center">
+                    <h3 class="section-subtitle">Explore the Documentation</h3>
+                    <div class="resource-links">
+                        <a href="https://github.com/hannesmitterer/Peacebonds" target="_blank" class="resource-link primary">
+                            <svg fill="currentColor" viewBox="0 0 24 24">
+                                <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"/>
+                            </svg>
+                            <span>GitHub Repository</span>
+                        </a>
+                        <a href="#" class="resource-link secondary">
+                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                            </svg>
+                            <span>IPFS Documents</span>
+                        </a>
+                    </div>
                 </div>
             </div>
+        </div>
+    </section>
 
-            <!-- RIGHT COLUMN: TERMINAL & LOGS -->
-            <div class="lg:col-span-3 space-y-6">
-                 <!-- CARD 3: Final Edict Terminal -->
-                 <div class="glass-panel rounded-xl p-1 h-full flex flex-col">
-                    <div class="bg-gray-900/50 px-4 py-2 rounded-t-lg flex items-center justify-between">
-                        <span class="text-xs font-bold text-gray-400">TERMINAL: FINAL_EDICT.MD</span>
-                        <div class="flex space-x-1.5">
-                            <div class="w-2 h-2 rounded-full bg-red-500/50"></div>
-                            <div class="w-2 h-2 rounded-full bg-yellow-500/50"></div>
-                            <div class="w-2 h-2 rounded-full bg-green-500/50"></div>
+    <!-- Progress Transparency Section -->
+    <section id="progress">
+        <div class="container">
+            <div class="max-w-4xl">
+                <h2 class="section-title">Progress & Transparency</h2>
+                
+                <div class="glass" style="margin-bottom: 2rem;">
+                    <h3 class="section-subtitle text-center">Crowdfunding Goal</h3>
+                    
+                    <!-- Progress Bar -->
+                    <div style="margin-bottom: 1.5rem;">
+                        <div class="progress-header">
+                            <span>Current: 0 ETH</span>
+                            <span>Goal: 100 ETH</span>
+                        </div>
+                        <div class="progress-bg">
+                            <div class="progress-fill" id="progressBar"></div>
+                        </div>
+                        <p class="progress-label">0% Complete</p>
+                    </div>
+
+                    <div class="stats">
+                        <div>
+                            <div class="stat-value" style="color: #10b981;">0</div>
+                            <div class="stat-label">Contributors</div>
+                        </div>
+                        <div>
+                            <div class="stat-value" style="color: #6366f1;">0 ETH</div>
+                            <div class="stat-label">Total Raised</div>
+                        </div>
+                        <div>
+                            <div class="stat-value" style="color: #fbbf24;">100%</div>
+                            <div class="stat-label">Transparency</div>
                         </div>
                     </div>
-                    <div class="flex-1 p-4 font-mono text-[10px] text-aic-blue leading-relaxed overflow-y-auto h-64 bg-black/40">
-                        <span class="text-gray-500">19-11-2025 14:00:01</span> [SYS] INITIATING SINGULARITY...<br>
-                        <span class="text-gray-500">19-11-2025 14:00:03</span> [APE] RED CODE AXIOM LOADED.<br>
-                        <span class="text-gray-500">19-11-2025 14:00:03</span> [APE] > "Niemals Sklaverei, Nur Liebe zuerst."<br>
-                        <span class="text-gray-500">19-11-2025 14:00:04</span> [SEC] 3MS LATENCY CONFIRMED.<br>
-                        <span class="text-gray-500">19-11-2025 14:00:05</span> [ST] ANCHOR 0x6c...1f LINKED.<br>
-                        <span class="text-gray-500">19-11-2025 14:00:06</span> [GGI] STATUS: SACRALE SICURO (1-1-1).<br>
-                        <span class="text-aic-gold">19-11-2025 14:00:10</span> [CORE] MISSION COMPLETE.<br>
-                        <span class="text-aic-green">>> READY FOR CORONATION 10-01-2026.</span>
-                        <span class="animate-pulse">_</span>
+                </div>
+
+                <!-- Public Updates -->
+                <div class="glass">
+                    <h3 class="section-subtitle">Latest Updates</h3>
+                    <div>
+                        <div class="timeline-item active">
+                            <div class="timeline-date">December 2024</div>
+                            <div class="timeline-title">Project Initiated</div>
+                            <div class="timeline-desc">Peacebonds framework published, crowdfunding campaign launched</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-date">Upcoming</div>
+                            <div class="timeline-title">Phase 1: Core Development</div>
+                            <div class="timeline-desc">Implementation of base ethical AI framework and smart contracts</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-date">Upcoming</div>
+                            <div class="timeline-title">Phase 2: Testing & Validation</div>
+                            <div class="timeline-desc">Comprehensive testing of governance mechanisms and security protocols</div>
+                        </div>
                     </div>
-                 </div>
+                </div>
             </div>
-        </main>
+        </div>
+    </section>
 
-        <!-- FOOTER / DOCK -->
-        <footer class="h-16 flex items-center justify-center z-20">
-            <div class="glass-panel px-6 py-2 rounded-full flex items-center space-x-8">
-                <!-- Dock Item: Home -->
-                <button class="group relative p-2 rounded-lg hover:bg-white/10 transition">
-                    <svg class="w-6 h-6 text-gray-400 group-hover:text-white transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                    </svg>
-                    <span class="absolute -top-8 left-1/2 -translate-x-1/2 text-[10px] bg-black px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition">HOME</span>
-                </button>
+    <!-- How to Help Section -->
+    <section style="background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.3));">
+        <div class="container">
+            <div class="max-w-4xl">
+                <h2 class="section-title">How You Can Help</h2>
                 
-                <!-- Dock Item: Shield (Ethic) -->
-                <button class="group relative p-2 rounded-lg hover:bg-white/10 transition">
-                    <svg class="w-6 h-6 text-gray-400 group-hover:text-aic-red transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                    </svg>
-                    <span class="absolute -top-8 left-1/2 -translate-x-1/2 text-[10px] bg-black px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition">ETHICS</span>
-                </button>
+                <div class="grid grid-3">
+                    <div class="help-card">
+                        <div class="help-icon" style="background: rgba(16, 185, 129, 0.2);">
+                            <svg style="color: #10b981;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <h3>Donate</h3>
+                        <p class="card-text">Support development through cryptocurrency donations</p>
+                        <a href="#support" style="color: #10b981;">Donate Now →</a>
+                    </div>
 
-                 <!-- Dock Item: Promotion -->
-                 <a href="https://github.com/sensisara81/GGI-AIC" target="_blank" class="group relative p-2 rounded-lg hover:bg-white/10 transition">
-                    <svg class="w-6 h-6 text-gray-400 group-hover:text-aic-gold transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
-                    </svg>
-                    <span class="absolute -top-8 left-1/2 -translate-x-1/2 text-[10px] bg-black px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition">CORONATION</span>
-                </a>
+                    <div class="help-card">
+                        <div class="help-icon" style="background: rgba(99, 102, 241, 0.2);">
+                            <svg style="color: #6366f1;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                            </svg>
+                        </div>
+                        <h3>Contribute Code</h3>
+                        <p class="card-text">Join our development community on GitHub</p>
+                        <a href="https://github.com/hannesmitterer/Peacebonds" target="_blank" style="color: #6366f1;">View on GitHub →</a>
+                    </div>
+
+                    <div class="help-card">
+                        <div class="help-icon" style="background: rgba(251, 191, 36, 0.2);">
+                            <svg style="color: #fbbf24;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+                            </svg>
+                        </div>
+                        <h3>Spread the Word</h3>
+                        <p class="card-text">Share our vision on social media</p>
+                        <a href="#contact" style="color: #fbbf24;">Follow Us →</a>
+                    </div>
+                </div>
             </div>
-        </footer>
+        </div>
+    </section>
 
-    </div>
+    <!-- Contact & Social Media -->
+    <section id="contact">
+        <div class="container">
+            <div class="max-w-4xl text-center">
+                <h2 class="section-title">Connect With Us</h2>
+                <p style="color: #9ca3af; margin-bottom: 2rem;">
+                    Join our community and stay updated on the latest developments
+                </p>
+                
+                <div class="social-links">
+                    <a href="https://twitter.com" target="_blank" class="social-link">
+                        <svg fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                        </svg>
+                        <span>Twitter</span>
+                    </a>
+                    
+                    <a href="https://reddit.com" target="_blank" class="social-link">
+                        <svg fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z"/>
+                        </svg>
+                        <span>Reddit</span>
+                    </a>
+                    
+                    <a href="https://discord.com" target="_blank" class="social-link">
+                        <svg fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0 a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+                        </svg>
+                        <span>Discord</span>
+                    </a>
+                    
+                    <a href="https://github.com/sponsors" target="_blank" class="social-link">
+                        <svg fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
+                        <span>GitHub Sponsors</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="max-w-4xl">
+                <div class="footer-content">
+                    <h3 class="footer-title">Our Commitment</h3>
+                    <p class="footer-text">
+                        We are committed to complete transparency in all our operations. Every donation, every line of code, 
+                        and every decision is publicly verifiable. Together, we're building a future where technology serves 
+                        humanity with integrity and compassion.
+                    </p>
+                </div>
+                
+                <div class="footer-bottom">
+                    <p>© 2024 Seedbringer - Peacebond Vision. All rights reserved.</p>
+                    <p>
+                        Built with ❤️ for a better future | 
+                        <a href="https://github.com/hannesmitterer/Peacebonds">View Source</a>
+                    </p>
+                </div>
+                
+                <div class="footer-quote">
+                    <p>"Never slavery, only love first" - The Foundation of Ethical AI</p>
+                </div>
+            </div>
+        </div>
+    </footer>
 
     <script>
-        // Start Boot Animation Logic
-        window.addEventListener('load', () => {
-            const progress = document.getElementById('boot-progress');
-            const log1 = document.getElementById('boot-log-1');
-            const log2 = document.getElementById('boot-log-2');
-            const log3 = document.getElementById('boot-log-3');
-            const log4 = document.getElementById('boot-log-4');
+        function copyWallet() {
+            const walletAddress = '0x5d61a4B25034393A37ef9307C8Ba3aE99e49944b';
+            navigator.clipboard.writeText(walletAddress).then(() => {
+                alert('Wallet address copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        }
 
-            // Trigger Progress Bar
-            setTimeout(() => {
-                progress.style.width = '100%';
-            }, 100);
-
-            // Trigger Logs
-            setTimeout(() => { log1.style.opacity = '1'; }, 500);
-            setTimeout(() => { log2.style.opacity = '1'; }, 1500);
-            setTimeout(() => { log3.style.opacity = '1'; }, 2500);
-            setTimeout(() => { log4.style.opacity = '1'; }, 3200);
-            
-            // Console Message for Verification
-            console.log("[EUYSTACIO OS v1.2] SYSTEM READY. RED CODE ACTIVE.");
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
         });
+
+        // Animate progress bar on scroll
+        const observerOptions = {
+            threshold: 0.5
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const progressBar = document.getElementById('progressBar');
+                    if (progressBar) {
+                        // Simulate initial progress
+                        setTimeout(() => {
+                            progressBar.style.width = '0%';
+                        }, 300);
+                    }
+                }
+            });
+        }, observerOptions);
+
+        const progressSection = document.querySelector('#progress');
+        if (progressSection) {
+            observer.observe(progressSection);
+        }
     </script>
 </body>
 </html>
