@@ -1,0 +1,216 @@
+# Notification Propagation Configuration
+# Discord and Telegram integration for Seedbringer Treasury updates
+
+version: "1.0"
+
+# Notification Channels
+channels:
+  discord:
+    enabled: true
+    webhook_url_env: "DISCORD_WEBHOOK_URL"
+    channels:
+      - name: "treasury-updates"
+        priority: "high"
+        events:
+          - "balance_change"
+          - "runway_warning"
+          - "ipfs_snapshot"
+      
+      - name: "community-governance"
+        priority: "medium"
+        events:
+          - "monthly_report"
+          - "allocation_update"
+      
+      - name: "development"
+        priority: "low"
+        events:
+          - "system_status"
+          - "maintenance"
+  
+  telegram:
+    enabled: true
+    bot_token_env: "TELEGRAM_BOT_TOKEN"
+    chat_id_env: "TELEGRAM_CHAT_ID"
+    channels:
+      - name: "treasury-alerts"
+        priority: "high"
+        events:
+          - "critical_balance"
+          - "runway_critical"
+      
+      - name: "community-updates"
+        priority: "medium"
+        events:
+          - "weekly_summary"
+          - "funding_received"
+
+# Event Types and Thresholds
+events:
+  balance_change:
+    description: "Treasury balance changed significantly"
+    threshold: 5  # 5% change
+    cooldown: 3600  # 1 hour in seconds
+  
+  runway_warning:
+    description: "Sustainability runway below threshold"
+    thresholds:
+      critical: 90  # days
+      warning: 180  # days
+      stable: 365   # days
+    check_interval: 86400  # Daily check
+  
+  ipfs_snapshot:
+    description: "New treasury snapshot stored to IPFS"
+    frequency: "daily"
+    retention: 30  # Keep 30 days of snapshots
+  
+  monthly_report:
+    description: "Monthly treasury and operations report"
+    schedule: "0 0 1 * *"  # First day of month at midnight
+  
+  funding_received:
+    description: "New funding received in treasury"
+    min_amount: 0.01  # Minimum ETH to notify
+
+# Propagation Settings
+propagation:
+  instant_updates:
+    enabled: true
+    events:
+      - "critical_balance"
+      - "runway_critical"
+      - "funding_received"
+  
+  batch_updates:
+    enabled: true
+    interval: 3600  # 1 hour
+    events:
+      - "balance_change"
+      - "system_status"
+  
+  scheduled_updates:
+    enabled: true
+    schedules:
+      - type: "daily"
+        time: "09:00"
+        timezone: "UTC"
+        events: ["ipfs_snapshot"]
+      
+      - type: "weekly"
+        day: "monday"
+        time: "10:00"
+        timezone: "UTC"
+        events: ["weekly_summary"]
+      
+      - type: "monthly"
+        day: 1
+        time: "00:00"
+        timezone: "UTC"
+        events: ["monthly_report"]
+
+# Message Templates
+templates:
+  discord:
+    balance_change: |
+      🏦 **Treasury Balance Update**
+      
+      New Balance: {balance_eth} ETH (${balance_usd})
+      Change: {change_percentage}%
+      Runway: {runway_months} months
+      
+      Status: {health_status}
+    
+    runway_warning: |
+      ⚠️ **Sustainability Runway Alert**
+      
+      Current Runway: {runway_days} days ({runway_months} months)
+      Status: {health_status}
+      Total Value: ${total_value_usd}
+      
+      Action may be required to ensure operational continuity.
+    
+    ipfs_snapshot: |
+      📌 **Treasury Snapshot Stored**
+      
+      IPFS Hash: {ipfs_hash}
+      Timestamp: {timestamp}
+      Balance: {balance_eth} ETH
+      
+      Retrieve: ipfs://{ipfs_hash}
+  
+  telegram:
+    critical_balance: |
+      🚨 CRITICAL: Treasury balance critically low
+      
+      Balance: {balance_eth} ETH (${balance_usd})
+      Runway: {runway_days} days
+      
+      Immediate action required!
+    
+    funding_received: |
+      💰 New funding received!
+      
+      Amount: {amount_eth} ETH (${amount_usd})
+      New Balance: {balance_eth} ETH
+      New Runway: {runway_months} months
+
+# Rate Limiting
+rate_limiting:
+  discord:
+    max_messages_per_hour: 50
+    max_messages_per_day: 500
+  
+  telegram:
+    max_messages_per_hour: 30
+    max_messages_per_day: 300
+
+# Error Handling
+error_handling:
+  retry_attempts: 3
+  retry_delay: 60  # seconds
+  fallback_channel: "discord.treasury-updates"
+  
+  failure_notification:
+    enabled: true
+    channel: "discord.development"
+    threshold: 5  # Notify after 5 consecutive failures
+
+# IPFS Integration
+ipfs:
+  enabled: true
+  gateway: "https://ipfs.io/ipfs/"
+  pinning_service: "pinata"
+  auto_pin: true
+  snapshot_frequency: "daily"
+  
+  metadata:
+    include_timestamp: true
+    include_signature: true
+    include_health_metrics: true
+
+# Monitoring
+monitoring:
+  health_check_interval: 300  # 5 minutes
+  metrics_retention: 90  # days
+  
+  alerts:
+    - name: "propagation_failure"
+      threshold: 3
+      action: "notify_admin"
+    
+    - name: "high_latency"
+      threshold: 5000  # ms
+      action: "log_warning"
+
+# NSR (Network State Resilience) and OLF (Open Ledger Framework) Compliance
+compliance:
+  nsr:
+    redundancy_level: 3  # Multiple notification channels
+    fallback_enabled: true
+    data_persistence: "ipfs"
+  
+  olf:
+    transparency: "full"
+    audit_trail: "blockchain"
+    public_access: true

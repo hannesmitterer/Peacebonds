@@ -1,0 +1,32 @@
+# Seedbringer Treasury Funding Configuration
+# Framework Euystacio - Infrastructure Operations
+
+github: [hannesmitterer]
+
+custom:
+  - name: "Seedbringer Treasury (ETH)"
+    url: "ethereum:0x5d61a4B25034393A37ef9307C8Ba3aE99e49944b"
+    description: "Primary treasury for Framework Euystacio operations"
+  
+  - name: "Treasury Dashboard"
+    url: "https://hannesmitterer.github.io/Peacebonds"
+    description: "View real-time treasury status and sustainability metrics"
+
+# Treasury Allocation
+# 70% - Core development team sustenance
+# 20% - Infrastructure (IPFS, audits, testing)
+# 10% - Community operations
+
+# Supported Tokens: ETH, USDC, USDT, DAI (any ERC-20)
+# Network: Ethereum and EVM-compatible chains
+
+# Transparency: All operations documented via OpenCollective (Q1 2026)
+# Governance: Community-controlled via CPQ validation
+
+# IPFS Root: QmEustacioFrameworkGenesis2026Complete
+# Smart Contract: 0x9d54B4B87aD8c7c9431E83F9C7f0aA4eC40b61B1 (Sepolia)
+
+# For questions:
+# - Technical: Repository issues
+# - Governance: Discord #community-governance
+# - Operations: See FUNDING.md
