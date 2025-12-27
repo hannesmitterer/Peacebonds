@@ -1,0 +1,80 @@
+
+---
+
+# 3️⃣ Smart Contract v1.1 — *Definitivo*
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/utils/Base64.sol";
+
+contract EuystacioManifest is ERC721 {
+
+    uint256 public constant TOKEN_ID = 1;
+
+    string public manifestCID;
+    string public signatureCID;
+
+    bytes32 public manifestHash;
+    bytes32 public signatureHash;
+
+    event EuystacioAnchored(
+        uint256 indexed tokenId,
+        string manifestCID,
+        string signatureCID,
+        bytes32 manifestHash,
+        bytes32 signatureHash
+    );
+
+    constructor(
+        string memory _manifestCID,
+        string memory _signatureCID
+    ) ERC721("EuystacioManifest", "EUM") {
+
+        manifestCID = _manifestCID;
+        signatureCID = _signatureCID;
+
+        manifestHash = keccak256(bytes(_manifestCID));
+        signatureHash = keccak256(bytes(_signatureCID));
+
+        _mint(msg.sender, TOKEN_ID);
+
+        emit EuystacioAnchored(
+            TOKEN_ID,
+            _manifestCID,
+            _signatureCID,
+            manifestHash,
+            signatureHash
+        );
+    }
+
+    function tokenURI(uint256) public view override returns (string memory) {
+        bytes memory json = abi.encodePacked(
+            '{"name":"Euystacio Manifest",',
+            '"description":"Publicly anchored manifesto with triple cryptographic signature",',
+            '"manifestCID":"', manifestCID, '",',
+            '"signatureCID":"', signatureCID, '",',
+            '"manifestHash":"', _toHex(manifestHash), '",',
+            '"signatureHash":"', _toHex(signatureHash), '"}'
+        );
+
+        return string(
+            abi.encodePacked(
+                "data:application/json;base64,",
+                Base64.encode(json)
+            )
+        );
+    }
+
+    function _toHex(bytes32 data) internal pure returns (string memory) {
+        bytes memory alphabet = "0123456789abcdef";
+        bytes memory str = new bytes(64);
+        for (uint i = 0; i < 32; i++) {
+            str[i*2] = alphabet[uint8(data[i] >> 4)];
+            str[i*2+1] = alphabet[uint8(data[i] & 0x0f)];
+        }
+        return string(str);
+    }
+}
