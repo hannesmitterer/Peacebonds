@@ -1,0 +1,136 @@
+# Prometheus Configuration for Protocollo Meta Salvage
+# Metrics Collection and Alerting
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: protocollo-meta-salvage
+    environment: production
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - alertmanager:9093
+
+# Rule files for alerts
+rule_files:
+  - "/etc/prometheus/rules/ethical_risks.yml"
+  - "/etc/prometheus/rules/peace_bonds.yml"
+  - "/etc/prometheus/rules/system_health.yml"
+
+# Scrape configurations
+scrape_configs:
+  # Kafka Metrics
+  - job_name: 'kafka'
+    static_configs:
+      - targets:
+          - kafka-broker-1:9090
+          - kafka-broker-2:9090
+          - kafka-broker-3:9090
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        regex: '([^:]+).*'
+        replacement: '${1}'
+
+  # Flink Metrics
+  - job_name: 'flink'
+    static_configs:
+      - targets:
+          - flink-jobmanager:9249
+          - flink-taskmanager-1:9249
+          - flink-taskmanager-2:9249
+    metrics_path: /metrics
+
+  # Kubernetes Metrics
+  - job_name: 'kubernetes-pods'
+    kubernetes_sd_configs:
+      - role: pod
+        namespaces:
+          names:
+            - protocollo-meta-salvage
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+        action: keep
+        regex: true
+      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+        action: replace
+        target_label: __metrics_path__
+        regex: (.+)
+      - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+        action: replace
+        regex: ([^:]+)(?::\d+)?;(\d+)
+        replacement: $1:$2
+        target_label: __address__
+
+  # CaaS Provider Metrics
+  - job_name: 'caas-providers'
+    static_configs:
+      - targets:
+          - provider-exporter:9100
+    metrics_path: /metrics
+    metric_relabel_configs:
+      - source_labels: [provider]
+        target_label: caas_provider
+
+  # Peace Bonds Enforcement Metrics
+  - job_name: 'peace-bonds'
+    static_configs:
+      - targets:
+          - peace-bonds-controller:8080
+    metrics_path: /metrics
+
+  # OPA Policy Engine Metrics
+  - job_name: 'opa'
+    static_configs:
+      - targets:
+          - opa-server:8181
+    metrics_path: /metrics
+
+  # Terraform State Metrics
+  - job_name: 'terraform-exporter'
+    static_configs:
+      - targets:
+          - terraform-state-exporter:9101
+    scrape_interval: 60s
+
+  # ML Model Metrics
+  - job_name: 'ml-models'
+    static_configs:
+      - targets:
+          - model-server:8500
+    metrics_path: /monitoring/prometheus/metrics
+
+  # Elasticsearch Metrics
+  - job_name: 'elasticsearch'
+    static_configs:
+      - targets:
+          - elasticsearch-exporter:9114
+
+  # PostgreSQL Metrics
+  - job_name: 'postgresql'
+    static_configs:
+      - targets:
+          - postgres-exporter:9187
+
+  # MongoDB Metrics
+  - job_name: 'mongodb'
+    static_configs:
+      - targets:
+          - mongodb-exporter:9216
+
+# Remote write for long-term storage
+remote_write:
+  - url: https://victoria-metrics:8428/api/v1/write
+    tls_config:
+      insecure_skip_verify: false
+      ca_file: /etc/prometheus/tls/ca.crt
+      cert_file: /etc/prometheus/tls/client.crt
+      key_file: /etc/prometheus/tls/client.key
+    queue_config:
+      max_samples_per_send: 10000
+      max_shards: 30
+      capacity: 500000

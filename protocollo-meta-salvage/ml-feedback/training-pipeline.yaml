@@ -1,0 +1,315 @@
+# ML Training Pipeline Configuration for Protocollo Meta Salvage
+# Continuous Learning and Model Improvement
+
+ml_training_pipeline:
+  name: protocollo-ml-feedback
+  version: "1.0"
+  
+  # Data Collection
+  data_collection:
+    sources:
+      audit_trail:
+        enabled: true
+        elasticsearch_index: protocollo-audit-trail-*
+        query:
+          range:
+            timestamp:
+              gte: "now-7d"
+              lte: "now"
+        
+      metrics:
+        enabled: true
+        prometheus_endpoint: http://prometheus:9090
+        queries:
+          - metric: symbiosis_score
+            aggregation: avg_over_time
+            window: 5m
+          - metric: lock_in_risk_score
+            aggregation: max_over_time
+            window: 5m
+          - metric: throughput_metrics
+            aggregation: rate
+            window: 1m
+            
+      decisions:
+        enabled: true
+        opa_decision_logs: /logs/opa-decisions
+        postgresql:
+          host: postgresql-audit:5432
+          database: audit_db
+          table: opa_decisions
+          
+    collection_frequency:
+      continuous: false
+      scheduled: true
+      cron: "0 0 * * 0"  # Weekly on Sunday at midnight
+      
+  # Data Preprocessing
+  preprocessing:
+    cleaning:
+      remove_duplicates: true
+      handle_missing_values: true
+      missing_value_strategy: median
+      
+    normalization:
+      method: min_max_scaling
+      feature_range: [0, 1]
+      
+    feature_engineering:
+      enabled: true
+      features:
+        - name: symbiosis_score_trend
+          type: temporal
+          window: 24h
+          aggregation: slope
+          
+        - name: lock_in_risk_velocity
+          type: temporal
+          window: 1h
+          aggregation: derivative
+          
+        - name: provider_diversity_index
+          type: categorical
+          encoding: one_hot
+          
+        - name: throughput_anomaly_score
+          type: computed
+          formula: |
+            (current_throughput - avg_throughput) / stddev_throughput
+            
+        - name: ethical_risk_composite
+          type: weighted_sum
+          weights:
+            symbiosis_score: 0.4
+            lock_in_risk_score: 0.3
+            anomaly_score: 0.3
+            
+    splitting:
+      train_ratio: 0.7
+      validation_ratio: 0.15
+      test_ratio: 0.15
+      stratify: true
+      random_seed: 42
+      
+  # Model Training
+  training:
+    models:
+      # Anomaly Detection Model
+      - name: anomaly_detector
+        type: autoencoder
+        framework: tensorflow
+        architecture:
+          encoder_layers:
+            - units: 128
+              activation: relu
+            - units: 64
+              activation: relu
+            - units: 32
+              activation: relu
+          decoder_layers:
+            - units: 64
+              activation: relu
+            - units: 128
+              activation: relu
+            - units: input_dim
+              activation: sigmoid
+        hyperparameters:
+          learning_rate: 0.001
+          batch_size: 256
+          epochs: 100
+          early_stopping_patience: 10
+          optimizer: adam
+        
+      # Risk Classification Model
+      - name: risk_classifier
+        type: gradient_boosting
+        framework: pytorch
+        algorithm: xgboost
+        hyperparameters:
+          max_depth: 7
+          learning_rate: 0.1
+          n_estimators: 200
+          subsample: 0.8
+          colsample_bytree: 0.8
+          
+      # Time Series Forecasting Model
+      - name: symbiosis_forecaster
+        type: lstm
+        framework: tensorflow
+        architecture:
+          lstm_units: [128, 64, 32]
+          dropout: 0.2
+          dense_units: 16
+          output_units: 1
+        hyperparameters:
+          learning_rate: 0.001
+          batch_size: 64
+          epochs: 50
+          sequence_length: 24  # hours
+          
+  # Model Evaluation
+  evaluation:
+    metrics:
+      anomaly_detector:
+        - reconstruction_error
+        - precision
+        - recall
+        - f1_score
+        - auc_roc
+        
+      risk_classifier:
+        - accuracy
+        - precision
+        - recall
+        - f1_score
+        - confusion_matrix
+        
+      symbiosis_forecaster:
+        - mae  # Mean Absolute Error
+        - mse  # Mean Squared Error
+        - rmse  # Root Mean Squared Error
+        - mape  # Mean Absolute Percentage Error
+        
+    thresholds:
+      minimum_accuracy: 0.85
+      minimum_precision: 0.80
+      minimum_recall: 0.80
+      minimum_f1_score: 0.80
+      
+    validation:
+      cross_validation: true
+      k_folds: 5
+      
+  # Model Deployment
+  deployment:
+    strategy: canary
+    canary_traffic_percentage: 10
+    canary_duration_hours: 24
+    rollback_on_error_rate: 0.05
+    
+    serving:
+      platform: kubernetes
+      replicas: 3
+      resources:
+        cpu: "2"
+        memory: "4Gi"
+      autoscaling:
+        enabled: true
+        min_replicas: 2
+        max_replicas: 10
+        target_cpu_utilization: 70
+        
+    endpoints:
+      - name: predict
+        path: /v1/models/{model_name}:predict
+        method: POST
+        
+      - name: explain
+        path: /v1/models/{model_name}:explain
+        method: POST
+        
+      - name: health
+        path: /v1/models/{model_name}/health
+        method: GET
+        
+  # Feedback Loop
+  feedback_loop:
+    enabled: true
+    
+    data_collection:
+      prediction_logging: true
+      actual_outcome_tracking: true
+      feedback_delay_hours: 1
+      
+    retraining:
+      automatic: true
+      triggers:
+        - condition: accuracy < 0.85
+          action: retrain_immediately
+          
+        - condition: data_drift_detected == true
+          action: retrain_scheduled
+          
+        - condition: days_since_last_training > 7
+          action: retrain_scheduled
+          
+      schedule: "0 0 * * 0"  # Weekly
+      
+    monitoring:
+      metrics:
+        - prediction_accuracy_realtime
+        - prediction_latency
+        - model_drift_score
+        - feature_importance_changes
+        
+      alerts:
+        - name: model_accuracy_degraded
+          condition: accuracy < 0.85
+          severity: high
+          
+        - name: data_drift_detected
+          condition: drift_score > 0.3
+          severity: medium
+          
+        - name: prediction_latency_high
+          condition: p95_latency > 500ms
+          severity: medium
+          
+  # Experiment Tracking
+  experiment_tracking:
+    enabled: true
+    platform: mlflow
+    tracking_uri: http://mlflow:5000
+    
+    logged_artifacts:
+      - model_weights
+      - training_history
+      - evaluation_metrics
+      - feature_importance
+      - confusion_matrices
+      - hyperparameters
+      
+  # Model Versioning
+  versioning:
+    enabled: true
+    registry: model-registry:5000
+    naming_convention: "{model_name}_v{version}_{timestamp}"
+    
+    retention:
+      keep_last_n_versions: 5
+      archive_older_versions: true
+      
+  # Security
+  security:
+    model_encryption: true
+    access_control:
+      training: ["ml_engineer", "admin"]
+      deployment: ["ml_ops", "admin"]
+      inference: ["application", "service_account"]
+      
+  # Compliance
+  compliance:
+    model_governance:
+      approval_required: true
+      approvers: ["ml_lead", "security_lead"]
+      
+    explainability:
+      enabled: true
+      methods:
+        - shap
+        - lime
+        - feature_importance
+      
+    bias_detection:
+      enabled: true
+      protected_attributes:
+        - provider_location
+        - provider_size
+      fairness_metrics:
+        - demographic_parity
+        - equal_opportunity
+        
+    audit_trail:
+      log_all_predictions: true
+      log_model_updates: true
+      retention_days: 365
