@@ -4,7 +4,7 @@
   "description": "PeaceBonds (Euystacio Protocol) v1.1 - Reference Implementation",
   "main": "dist/index.js",
   "bin": {
-    "peacebond": "./dist/cli/index.js"
+    "peacebond": "./dist/src/cli/index.js"
   },
   "scripts": {
     "compile": "hardhat compile",
