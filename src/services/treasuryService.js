@@ -196,6 +196,35 @@ async function fetchCryptoPrices() {
   return {
     ethPrice: 2000, // USD
     btcPrice: 40000 // USD
+ * Fetch real-time cryptocurrency prices
+ * @returns {Promise<{ ethPrice: number, btcPrice: number }>}
+ */
+async function fetchCryptoPrices() {
+  try {
+    const response = await fetch(
+      'https://api.coingecko.com/api/v3/simple/price?ids=ethereum,bitcoin&vs_currencies=usd'
+    );
+    const data = await response.json();
+
+    const ethPrice = data?.ethereum?.usd;
+    const btcPrice = data?.bitcoin?.usd;
+
+    if (typeof ethPrice === 'number' && typeof btcPrice === 'number') {
+      return {
+        ethPrice,
+        btcPrice
+      };
+    }
+
+    console.error('Unexpected price data format from CoinGecko:', data);
+  } catch (error) {
+    console.error('Error fetching crypto prices from CoinGecko:', error);
+  }
+
+  // Fallback to previous placeholder values to avoid breaking behavior
+  return {
+    ethPrice: 2000, // USD
+    btcPrice: 40000 // USD
   };
 }
 
@@ -210,8 +239,7 @@ async function getTreasuryMetrics() {
   const prices = await fetchCryptoPrices();
 
   const balances = { eth: ethBalance, btc: btcBalance };
-  const runway = calculateSustainabilityRunway(balances, TREASURY_CONFIG.monthlyBurnRate, prices);
-  
+  const runway = calculateSustainabilityRunway(balances, 5000, prices);
   return {
     balances,
     prices,
