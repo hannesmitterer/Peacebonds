@@ -439,8 +439,9 @@ ipfs bootstrap add --default
 # Enable public gateway
 ipfs config Addresses.Gateway /ip4/0.0.0.0/tcp/8080
 
-# Configure CORS (if needed)
-ipfs config --json API.HTTPHeaders.Access-Control-Allow-Origin '["*"]'
+# Configure CORS for a specific trusted frontend (if needed)
+ipfs config --json API.HTTPHeaders.Access-Control-Allow-Origin '["https://your-frontend.example.com"]'
+# IMPORTANT: Do not use "*" here; permissive CORS on the API is unsafe.
 
 # Set up HTTPS (recommended)
 # Use Caddy or Nginx as reverse proxy
