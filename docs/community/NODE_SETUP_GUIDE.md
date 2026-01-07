@@ -78,10 +78,16 @@ ipfs init
 #### Step 3: Configure for Public Gateway (Optional)
 
 ```bash
-# Allow external access (if running on server)
-ipfs config Addresses.API /ip4/0.0.0.0/tcp/5001
+# For security, keep the API bound to localhost (default)
+ipfs config Addresses.API /ip4/127.0.0.1/tcp/5001
+
+# Expose the HTTP gateway publicly (optional)
+# WARNING: This makes your gateway accessible from the internet.
+# Make sure your host firewall and network settings are properly configured.
 ipfs config Addresses.Gateway /ip4/0.0.0.0/tcp/8080
 
+# If you *must* expose the API remotely, only do so behind strict firewall/auth:
+# ipfs config Addresses.API /ip4/0.0.0.0/tcp/5001
 # Increase connection limits
 ipfs config --json Swarm.ConnMgr.HighWater 2000
 ipfs config --json Swarm.ConnMgr.LowWater 500
