@@ -4,13 +4,13 @@
 github: [hannesmitterer]
 
 custom:
-  - name: "Seedbringer Treasury (ETH)"
-    url: "ethereum:0x5d61a4B25034393A37ef9307C8Ba3aE99e49944b"
-    description: "Primary treasury for Framework Euystacio operations"
-  
-  - name: "Treasury Dashboard"
-    url: "https://hannesmitterer.github.io/Peacebonds"
-    description: "View real-time treasury status and sustainability metrics"
+  # Seedbringer Treasury (ETH)
+  # Primary treasury for Framework Euystacio operations
+  - "ethereum:0x5d61a4B25034393A37ef9307C8Ba3aE99e49944b"
+
+  # Treasury Dashboard
+  # View real-time treasury status and sustainability metrics
+  - "https://hannesmitterer.github.io/Peacebonds"
 
 # Treasury Allocation
 # 70% - Core development team sustenance

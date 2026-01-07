@@ -7,16 +7,76 @@ const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
 
-// Load configuration
-let config;
+// Polyfill for fetch in Node.js < 18
+const fetch = globalThis.fetch || require('node-fetch');
+
+// Load configuration with improved error handling
+let rawConfig;
 try {
   const configPath = path.join(__dirname, '../config/notification_propagation.yml');
   const fileContents = fs.readFileSync(configPath, 'utf8');
-  config = yaml.load(fileContents);
+  rawConfig = yaml.load(fileContents) || {};
 } catch (e) {
   console.error('Error loading notification config:', e);
-  config = { channels: { discord: { enabled: false }, telegram: { enabled: false } } };
+  rawConfig = {};
 }
+
+/**
+ * Normalize and apply safe defaults to the notification configuration.
+ * Ensures required nested objects exist even if the YAML file is malformed
+ * or missing sections.
+ * @param {any} value - Raw configuration value loaded from YAML
+ * @returns {Object} Normalized configuration object
+ */
+function normalizeNotificationConfig(value) {
+  const config = (value && typeof value === 'object') ? value : {};
+
+  // Ensure channels object and nested channel configs exist
+  if (!config.channels || typeof config.channels !== 'object') {
+    config.channels = {};
+  }
+
+  if (!config.channels.discord || typeof config.channels.discord !== 'object') {
+    config.channels.discord = {};
+  }
+  if (typeof config.channels.discord.enabled !== 'boolean') {
+    config.channels.discord.enabled = false;
+  }
+
+  if (!config.channels.telegram || typeof config.channels.telegram !== 'object') {
+    config.channels.telegram = {};
+  }
+  if (typeof config.channels.telegram.enabled !== 'boolean') {
+    config.channels.telegram.enabled = false;
+  }
+
+  // Ensure propagation configuration exists with safe nested structure
+  if (!config.propagation || typeof config.propagation !== 'object') {
+    config.propagation = {};
+  }
+  if (!config.propagation.instant_updates || typeof config.propagation.instant_updates !== 'object') {
+    config.propagation.instant_updates = {};
+  }
+  if (!Array.isArray(config.propagation.instant_updates.events)) {
+    config.propagation.instant_updates.events = [];
+  }
+  if (!config.propagation.batch_updates || typeof config.propagation.batch_updates !== 'object') {
+    config.propagation.batch_updates = {};
+  }
+  if (!Array.isArray(config.propagation.batch_updates.events)) {
+    config.propagation.batch_updates.events = [];
+  }
+
+  // Ensure templates exist
+  if (!config.templates || typeof config.templates !== 'object') {
+    config.templates = { discord: {}, telegram: {} };
+  }
+
+  return config;
+}
+
+// Final, normalized configuration used by this module
+const config = normalizeNotificationConfig(rawConfig);
 
 /**
  * Send Discord notification
@@ -110,7 +170,7 @@ async function sendTelegramNotification(channel, message, data = {}) {
 }
 
 /**
- * Interpolate template with data
+ * Interpolate template with data using safe string replacement
  * @param {string} template - Message template
  * @param {Object} data - Data for interpolation
  * @returns {string} Formatted message
@@ -120,7 +180,8 @@ function interpolateTemplate(template, data) {
   
   for (const [key, value] of Object.entries(data)) {
     const placeholder = `{${key}}`;
-    message = message.replace(new RegExp(placeholder, 'g'), value);
+    // Use split/join instead of RegExp for security
+    message = message.split(placeholder).join(String(value));
   }
   
   return message;
@@ -208,13 +269,25 @@ function shouldPropagate(eventType) {
  * @param {Object} metrics - Treasury metrics
  */
 async function notifyTreasuryUpdate(metrics) {
+  // Validate metrics object structure to prevent runtime errors
+  if (!metrics || typeof metrics !== 'object') {
+    console.error('Invalid metrics object provided to notifyTreasuryUpdate');
+    return { eventType: 'balance_change', propagated: false, results: [], timestamp: new Date().toISOString() };
+  }
+
+  const balances = metrics.balances || {};
+  const prices = metrics.prices || {};
+  const runway = metrics.runway || {};
+
   const eventData = {
-    balance_eth: metrics.balances.eth.toFixed(4),
-    balance_usd: (metrics.balances.eth * metrics.prices.ethPrice).toFixed(2),
-    runway_months: metrics.runway.runwayMonths,
-    runway_days: metrics.runway.runwayDays,
-    health_status: metrics.runway.healthStatus,
-    total_value_usd: metrics.runway.totalValueUSD.toFixed(2),
+    balance_eth: (typeof balances.eth === 'number' ? balances.eth : 0).toFixed(4),
+    balance_usd: (typeof balances.eth === 'number' && typeof prices.ethPrice === 'number' 
+      ? balances.eth * prices.ethPrice 
+      : 0).toFixed(2),
+    runway_months: runway.runwayMonths || 0,
+    runway_days: runway.runwayDays || 0,
+    health_status: runway.healthStatus || 'UNKNOWN',
+    total_value_usd: (typeof runway.totalValueUSD === 'number' ? runway.totalValueUSD : 0).toFixed(2),
     timestamp: new Date().toLocaleString()
   };
   
@@ -227,10 +300,10 @@ async function notifyTreasuryUpdate(metrics) {
  */
 async function notifyRunwayWarning(runway) {
   const eventData = {
-    runway_days: runway.runwayDays,
-    runway_months: runway.runwayMonths,
-    health_status: runway.healthStatus,
-    total_value_usd: runway.totalValueUSD.toFixed(2)
+    runway_days: runway.runwayDays || 0,
+    runway_months: runway.runwayMonths || 0,
+    health_status: runway.healthStatus || 'UNKNOWN',
+    total_value_usd: (typeof runway.totalValueUSD === 'number' ? runway.totalValueUSD : 0).toFixed(2)
   };
   
   const eventType = runway.healthStatus === 'CRITICAL' ? 'runway_critical' : 'runway_warning';
@@ -244,10 +317,12 @@ async function notifyRunwayWarning(runway) {
  * @param {Object} metrics - Treasury metrics
  */
 async function notifyIPFSSnapshot(ipfsHash, metrics) {
+  const balances = metrics?.balances || {};
+  
   const eventData = {
-    ipfs_hash: ipfsHash,
+    ipfs_hash: ipfsHash || '',
     timestamp: new Date().toLocaleString(),
-    balance_eth: metrics.balances.eth.toFixed(4)
+    balance_eth: (typeof balances.eth === 'number' ? balances.eth : 0).toFixed(4)
   };
   
   return await propagateEvent('ipfs_snapshot', eventData);
@@ -259,11 +334,17 @@ async function notifyIPFSSnapshot(ipfsHash, metrics) {
  * @param {Object} metrics - Updated treasury metrics
  */
 async function notifyFundingReceived(amount, metrics) {
+  const balances = metrics?.balances || {};
+  const prices = metrics?.prices || {};
+  const runway = metrics?.runway || {};
+  
   const eventData = {
-    amount_eth: amount.toFixed(4),
-    amount_usd: (amount * metrics.prices.ethPrice).toFixed(2),
-    balance_eth: metrics.balances.eth.toFixed(4),
-    runway_months: metrics.runway.runwayMonths
+    amount_eth: (typeof amount === 'number' ? amount : 0).toFixed(4),
+    amount_usd: (typeof amount === 'number' && typeof prices.ethPrice === 'number' 
+      ? amount * prices.ethPrice 
+      : 0).toFixed(2),
+    balance_eth: (typeof balances.eth === 'number' ? balances.eth : 0).toFixed(4),
+    runway_months: runway.runwayMonths || 0
   };
   
   return await propagateEvent('funding_received', eventData);
