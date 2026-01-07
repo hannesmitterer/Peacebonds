@@ -45,12 +45,28 @@ function isValidBitcoinAddress(address) {
 }
 
 /**
+ * Validate Ethereum address format (simple 0x-prefixed, 40-hex-characters check)
+ * @param {string} address
+ * @returns {boolean}
+ */
+function isValidEthereumAddress(address) {
+  if (typeof address !== 'string') {
+    return false;
+  }
+  return /^0x[a-fA-F0-9]{40}$/.test(address);
+}
+
+/**
  * Query real-time ETH balance
  * @param {string} address - Ethereum address
  * @returns {Promise<number>} Balance in ETH
  */
 async function getEthBalance(address = TREASURY_CONFIG.ethAddress) {
   try {
+    if (!isValidEthereumAddress(address)) {
+      console.error('Invalid Ethereum address provided to getEthBalance:', address);
+      return 0;
+    }
     if (!isValidEthereumAddress(address)) {
       console.error('Invalid Ethereum address provided to getEthBalance:', address);
       return 0;
