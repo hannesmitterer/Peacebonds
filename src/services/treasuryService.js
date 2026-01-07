@@ -59,7 +59,8 @@ async function getEthBalance(address = TREASURY_CONFIG.ethAddress) {
     // For production, integrate with Web3 provider
     // This is a placeholder for the actual implementation
     const apiKey = process.env.ETHERSCAN_API_KEY;
-    const url = `https://api.etherscan.io/api?module=account&action=balance&address=${address}&tag=latest${apiKey ? `&apikey=${apiKey}` : ''}`;
+    const encodedAddress = encodeURIComponent(address);
+    const url = `https://api.etherscan.io/api?module=account&action=balance&address=${encodedAddress}&tag=latest${apiKey ? `&apikey=${encodeURIComponent(apiKey)}` : ''}`;
     const response = await fetch(url);
     const data = await response.json();
     
@@ -92,7 +93,8 @@ async function getBtcBalance(address = TREASURY_CONFIG.btcAddress) {
     }
     
     // For production, integrate with Bitcoin API
-    const response = await fetch(`https://blockchain.info/q/addressbalance/${normalizedAddress}`);
+    const encodedAddress = encodeURIComponent(normalizedAddress);
+    const response = await fetch(`https://blockchain.info/q/addressbalance/${encodedAddress}`);
     const satoshis = await response.text();
     
     return parseFloat(satoshis) / 1e8; // Convert Satoshis to BTC
