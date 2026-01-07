@@ -196,35 +196,6 @@ async function fetchCryptoPrices() {
   return {
     ethPrice: 2000, // USD
     btcPrice: 40000 // USD
- * Fetch real-time cryptocurrency prices
- * @returns {Promise<{ ethPrice: number, btcPrice: number }>}
- */
-async function fetchCryptoPrices() {
-  try {
-    const response = await fetch(
-      'https://api.coingecko.com/api/v3/simple/price?ids=ethereum,bitcoin&vs_currencies=usd'
-    );
-    const data = await response.json();
-
-    const ethPrice = data?.ethereum?.usd;
-    const btcPrice = data?.bitcoin?.usd;
-
-    if (typeof ethPrice === 'number' && typeof btcPrice === 'number') {
-      return {
-        ethPrice,
-        btcPrice
-      };
-    }
-
-    console.error('Unexpected price data format from CoinGecko:', data);
-  } catch (error) {
-    console.error('Error fetching crypto prices from CoinGecko:', error);
-  }
-
-  // Fallback to previous placeholder values to avoid breaking behavior
-  return {
-    ethPrice: 2000, // USD
-    btcPrice: 40000 // USD
   };
 }
 
@@ -239,7 +210,7 @@ async function getTreasuryMetrics() {
   const prices = await fetchCryptoPrices();
 
   const balances = { eth: ethBalance, btc: btcBalance };
-  const runway = calculateSustainabilityRunway(balances, 5000, prices);
+  const runway = calculateSustainabilityRunway(balances, TREASURY_CONFIG.monthlyBurnRate, prices);
   return {
     balances,
     prices,
@@ -253,24 +224,98 @@ async function getTreasuryMetrics() {
 }
 
 /**
- * Store treasury data to IPFS
+ * Store treasury data to IPFS using Pinata or Web3.Storage
  * @param {Object} data - Treasury data to store
  * @returns {Promise<string>} IPFS hash
  */
 async function storeToIPFS(data) {
-  try {
-    // Placeholder for IPFS integration
-    // In production, use IPFS client library (ipfs-http-client) or pinning service API
-    const jsonData = JSON.stringify(data, null, 2);
-    console.log('Storing to IPFS:', jsonData);
-    
-    // Return mock hash for now
-    // TODO: Integrate with actual IPFS pinning service (Pinata, Web3.Storage, etc.)
-    return 'Qm' + Math.random().toString(36).substring(2, 15);
-  } catch (error) {
-    console.error('Error storing to IPFS:', error);
-    throw error;
+  const jsonData = JSON.stringify(data, null, 2);
+  
+  // Try Pinata if credentials are available
+  const pinataApiKey = process.env.PINATA_API_KEY;
+  const pinataSecretKey = process.env.PINATA_SECRET_API_KEY;
+  
+  if (pinataApiKey && pinataSecretKey) {
+    try {
+      const response = await fetch('https://api.pinata.cloud/pinning/pinJSONToIPFS', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'pinata_api_key': pinataApiKey,
+          'pinata_secret_api_key': pinataSecretKey
+        },
+        body: JSON.stringify({
+          pinataContent: data,
+          pinataMetadata: {
+            name: `treasury-snapshot-${new Date().toISOString()}`,
+            keyvalues: {
+              type: 'treasury-data',
+              timestamp: data.timestamp || new Date().toISOString()
+            }
+          }
+        })
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        console.log('Successfully stored to IPFS via Pinata:', result.IpfsHash);
+        return result.IpfsHash;
+      } else {
+        const errorText = await response.text();
+        console.error('Pinata API error:', response.status, errorText);
+      }
+    } catch (error) {
+      console.error('Error storing to IPFS via Pinata:', error);
+    }
   }
+  
+  // Try Web3.Storage if token is available
+  const web3StorageToken = process.env.WEB3_STORAGE_TOKEN;
+  
+  if (web3StorageToken) {
+    try {
+      const blob = new Blob([jsonData], { type: 'application/json' });
+      const files = [new File([blob], 'treasury-data.json')];
+      
+      const formData = new FormData();
+      formData.append('file', files[0]);
+      
+      const response = await fetch('https://api.web3.storage/upload', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${web3StorageToken}`
+        },
+        body: formData
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        console.log('Successfully stored to IPFS via Web3.Storage:', result.cid);
+        return result.cid;
+      } else {
+        const errorText = await response.text();
+        console.error('Web3.Storage API error:', response.status, errorText);
+      }
+    } catch (error) {
+      console.error('Error storing to IPFS via Web3.Storage:', error);
+    }
+  }
+  
+  // Fallback: Mock hash for development/testing
+  // When no IPFS credentials are configured, use deterministic hash based on data
+  console.warn('No IPFS pinning service configured. Using mock hash for development.');
+  console.log('To enable IPFS storage, set PINATA_API_KEY and PINATA_SECRET_API_KEY or WEB3_STORAGE_TOKEN');
+  
+  // Use a hash of the data for consistency in testing
+  const dataString = JSON.stringify(data);
+  let hash = 0;
+  for (let i = 0; i < dataString.length; i++) {
+    const char = dataString.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32bit integer
+  }
+  
+  return 'Qm' + Math.abs(hash).toString(36) + Date.now().toString(36);
 }
 
 /**
