@@ -1,4 +1,220 @@
-Skip to content
+# PeaceBonds (Euystacio Protocol) v1.1
+
+A minimal, open protocol for public notarization and verification of manifest-like documents using IPFS, cryptographic signatures, and blockchain anchoring.
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+## Overview
+
+PeaceBonds provides proof-of-existence, authorship attestation, and public verifiability for documents without relying on trusted intermediaries.
+
+**Key Features:**
+- ✅ ERC-721 smart contract for blockchain anchoring
+- ✅ IPFS integration for content-addressed storage
+- ✅ secp256k1 signature generation and verification (3+ signers required)
+- ✅ Complete 6-step verification procedure
+- ✅ CLI tool for easy creation and verification
+- ✅ Support for multiple blockchain networks and IPFS providers
+
+## Quick Start
+
+### Installation
+
+```bash
+git clone https://github.com/hannesmitterer/Peacebonds.git
+cd Peacebonds
+npm install
+npm run compile
+npm run build
+```
+
+### Configuration
+
+```bash
+cp .env.example .env
+# Edit .env with your settings
+```
+
+### Deploy Contract
+
+```bash
+# Compile contract
+npm run compile
+
+# Deploy (local)
+npx hardhat node
+node dist/scripts/deploy.js
+```
+
+### Create a PeaceBond
+
+```bash
+# Create manifest file
+echo "# My Manifest" > my-manifest.md
+
+# Create and anchor PeaceBond
+node dist/cli/index.js create my-manifest.md \
+  --contract YOUR_CONTRACT_ADDRESS \
+  --network sepolia
+```
+
+### Verify a PeaceBond
+
+```bash
+node dist/cli/index.js verify TOKEN_ID \
+  --contract YOUR_CONTRACT_ADDRESS \
+  --network sepolia
+```
+
+## Documentation
+
+- **[SPEC.md](SPEC.md)** - Protocol specification
+- **[docs/README.md](docs/README.md)** - Detailed overview
+- **[docs/USAGE.md](docs/USAGE.md)** - Usage guide and examples
+- **[docs/API.md](docs/API.md)** - Complete API reference
+- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** - System architecture
+
+## How It Works
+
+```
+1. Create Manifest → 2. Generate Signatures → 3. Upload to IPFS → 4. Anchor to Blockchain
+      │                      │                       │                    │
+   (Document)         (3+ secp256k1)          (manifestCID)        (ERC-721 NFT)
+                                              (signatureCID)       (Immutable proof)
+```
+
+**Verification Process:**
+1. Retrieve manifest via manifestCID from IPFS
+2. Hash the manifest content
+3. Retrieve signature file via signatureCID
+4. Verify all secp256k1 signatures against the manifest hash
+5. Verify that the CID hashes match the on-chain values
+6. Confirm the anchoring transaction on-chain
+
+If all steps succeed, the PeaceBond is valid.
+
+## Components
+
+### Smart Contract
+- **PeaceBondAnchor.sol**: ERC-721 contract for anchoring
+- Functions: `anchor()`, `verify()`, `getAnchor()`
+- Events: `PeaceBondAnchored`, `PeaceBondVerified`
+
+### TypeScript/JavaScript SDK
+- Signature generation and verification
+- IPFS upload and retrieval
+- Blockchain anchoring and verification
+- Complete verification procedure implementation
+
+### CLI Tool
+```bash
+peacebond create <manifest-file>  # Create new PeaceBond
+peacebond verify <tokenId>        # Verify existing PeaceBond  
+peacebond get <tokenId>           # Get PeaceBond details
+```
+
+## Example Usage
+
+### Programmatic Usage
+
+```typescript
+import { uploadManifest, uploadSignature } from './src/ipfs/upload.js';
+import { generateSignatures, serializeSignatures } from './src/signature/generate.js';
+import { anchorPeaceBond } from './src/blockchain/anchor.js';
+
+const manifestContent = "# My Manifest\n...";
+const privateKeys = ["0x...", "0x...", "0x..."];
+
+// Upload to IPFS
+const manifestCID = await uploadManifest(manifestContent);
+const signatures = await generateSignatures(manifestContent, privateKeys);
+const signatureJSON = serializeSignatures(signatures, manifestCID);
+const signatureCID = await uploadSignature(signatureJSON);
+
+// Anchor to blockchain
+const result = await anchorPeaceBond(manifestCID, signatureCID, {
+  rpcUrl: "https://ethereum-sepolia-rpc.publicnode.com",
+  privateKey: "0x...",
+  contractAddress: "0x..."
+});
+
+console.log(`PeaceBond #${result.tokenId} created`);
+```
+
+## Security Model
+
+**What PeaceBonds Guarantees:**
+- ✅ Document existed at timestamp T
+- ✅ Document was signed by specific addresses
+- ✅ CIDs and hashes match on-chain data
+- ✅ Content integrity via IPFS content addressing
+
+**What PeaceBonds Does NOT Guarantee:**
+- ❌ Truth or validity of manifest content
+- ❌ Authority or identity of signers
+- ❌ Legal enforceability
+- ❌ IPFS content availability (depends on pinning)
+
+## Non-Goals (Per Specification)
+
+- No enforcement of meaning or truth
+- No consensus between AI models
+- No governance or token economics
+- No content moderation
+
+## Development
+
+```bash
+# Compile smart contracts
+npm run compile
+
+# Build TypeScript
+npm run build
+
+# Clean build artifacts
+npm run clean
+```
+
+## Project Structure
+
+```
+/contracts              # Smart contracts
+  - PeaceBondAnchor.sol
+/src
+  /signature            # Signature generation/verification
+  /ipfs                 # IPFS integration
+  /blockchain           # Blockchain integration
+  /cli                  # CLI tool
+  /utils                # Utility functions
+/scripts                # Deployment scripts
+/test                   # Tests
+/examples               # Example manifests
+/docs                   # Documentation
+```
+
+## License
+
+MIT - See [SPEC.md](SPEC.md)
+
+## Contributing
+
+This is a reference implementation of the PeaceBonds protocol. Contributions, improvements, and extensions are welcome!
+
+## References
+
+- ERC-721: https://eips.ethereum.org/EIPS/eip-721
+- IPFS: https://docs.ipfs.tech/
+- secp256k1: https://en.bitcoin.it/wiki/Secp256k1
+
+## Support
+
+For issues, questions, or contributions, please open an issue on GitHub.
+
+---
+
+**Status:** Reference Implementation  
+**Version:** 1.0.0  
+**Protocol:** PeaceBonds (Euystacio Protocol) v1.1
 You said:
 Good morning 
 ChatGPT said:

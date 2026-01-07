@@ -1,17 +1,30 @@
-
 {
-  "name": "peacebonds-dashboard",
+  "name": "peacebonds",
   "version": "1.0.0",
-  "private": true,
-  "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-scripts": "5.0.1"
+  "description": "PeaceBonds (Euystacio Protocol) v1.1 - Reference Implementation",
+  "main": "dist/index.js",
+  "bin": {
+    "peacebond": "./dist/src/cli/index.js"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "build": "tsc",
+    "clean": "rm -rf dist artifacts cache"
+  },
+  "keywords": ["peacebonds", "euystacio", "blockchain", "ipfs", "notarization"],
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^14.0.2",
+    "dotenv": "^17.2.3",
+    "ethers": "^6.16.0",
+    "ipfs-http-client": "^60.0.1"
+  },
+  "devDependencies": {
+    "@openzeppelin/contracts": "^5.4.0",
+    "@types/node": "^25.0.3",
+    "hardhat": "^2.19.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
   }
 }
