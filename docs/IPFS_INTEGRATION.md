@@ -57,12 +57,12 @@ The system tries services in this order:
 
 ## Development Mode
 
-Without credentials, the system generates deterministic hashes based on the data content. This is useful for:
+Without credentials, the system generates **deterministic hashes** based on the data content. This is useful for:
 - Local development
-- Testing
+- Testing (same data always produces the same hash)
 - CI/CD pipelines
 
-The fallback hash is deterministic (same data = same hash) but not a real IPFS hash.
+The fallback hash is fully deterministic: identical data will always generate the same hash, making it suitable for testing.
 
 ## Retrieving Data
 

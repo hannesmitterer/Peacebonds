@@ -45,18 +45,6 @@ function isValidBitcoinAddress(address) {
 }
 
 /**
- * Validate Ethereum address format (simple 0x-prefixed, 40-hex-characters check)
- * @param {string} address
- * @returns {boolean}
- */
-function isValidEthereumAddress(address) {
-  if (typeof address !== 'string') {
-    return false;
-  }
-  return /^0x[a-fA-F0-9]{40}$/.test(address);
-}
-
-/**
  * Query real-time ETH balance
  * @param {string} address - Ethereum address
  * @returns {Promise<number>} Balance in ETH
@@ -303,10 +291,12 @@ async function storeToIPFS(data) {
   
   // Fallback: Mock hash for development/testing
   // When no IPFS credentials are configured, use deterministic hash based on data
-  console.warn('No IPFS pinning service configured. Using mock hash for development.');
-  console.log('To enable IPFS storage, set PINATA_API_KEY and PINATA_SECRET_API_KEY or WEB3_STORAGE_TOKEN');
+  console.warn(
+    'No IPFS pinning service configured. Using mock hash for development.\n' +
+    'To enable IPFS storage, set PINATA_API_KEY and PINATA_SECRET_API_KEY or WEB3_STORAGE_TOKEN'
+  );
   
-  // Use a hash of the data for consistency in testing
+  // Use a deterministic hash of the data for consistency in testing
   const dataString = JSON.stringify(data);
   let hash = 0;
   for (let i = 0; i < dataString.length; i++) {
@@ -315,7 +305,8 @@ async function storeToIPFS(data) {
     hash = hash & hash; // Convert to 32bit integer
   }
   
-  return 'Qm' + Math.abs(hash).toString(36) + Date.now().toString(36);
+  // Return deterministic hash (same data = same hash)
+  return 'Qm' + Math.abs(hash).toString(36).padStart(10, '0');
 }
 
 /**
