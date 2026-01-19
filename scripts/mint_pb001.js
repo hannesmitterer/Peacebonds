@@ -20,20 +20,22 @@ async function main() {
   }
   
   console.log(`Contract Address: ${contractAddress}`);
-  console.log(`Network: Sepolia\n`);
+  console.log(`Network: Sepolia (Euystacio Protocol v1.1)\n`);
   
   // Get contract instance
   const PeaceBondAnchor = await ethers.getContractFactory('PeaceBondAnchor');
   const contract = PeaceBondAnchor.attach(contractAddress);
   
-  // IPFS CIDs - Replace these with your actual CIDs
-  // These are placeholder values for demonstration
-  const manifestCID = 'QmYourManifestCIDHere123456789';
-  const signatureCID = 'QmYourSignatureCIDHere123456789';
+  // IPFS CIDs - Example valid format (46 characters starting with Qm)
+  // IMPORTANT: Replace these with your actual IPFS CIDs before minting
+  // Example format: QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG
+  const manifestCID = 'QmPeaceBondManifest001ExampleCIDReplace46Char';
+  const signatureCID = 'QmPeaceBondSignatur001ExampleCIDReplace46Char';
   
-  console.log('⚠️  Note: Using placeholder CIDs. Replace with actual IPFS CIDs before production use.');
-  console.log(`Manifest CID: ${manifestCID}`);
-  console.log(`Signature CID: ${signatureCID}\n`);
+  console.log('⚠️  IMPORTANT: Replace placeholder CIDs with actual IPFS CIDs');
+  console.log('   Valid IPFS CID format: Qm followed by 44 base58 characters (46 total)');
+  console.log(`   Manifest CID: ${manifestCID}`);
+  console.log(`   Signature CID: ${signatureCID}\n`);
   
   console.log('Invoking anchor() function...');
   

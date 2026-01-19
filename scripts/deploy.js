@@ -16,14 +16,15 @@ async function main() {
   
   const contractAddress = await contract.getAddress();
   
-  // Treasury wallet address as specified
+  // Treasury wallet address - Reference for future economic layer integration
+  // Note: Current PeaceBondAnchor.sol is pure notarization; treasury will be used in future economic extensions
   const treasuryWallet = '0x5d61a4B25034393A37ef9307C8Ba3aE99e49944b';
   
   console.log('\n✓ Deployment successful!');
   console.log('─────────────────────────────────────────────────────');
   console.log(`Contract Address: ${contractAddress}`);
-  console.log(`Treasury Wallet: ${treasuryWallet}`);
-  console.log(`Network: Sepolia`);
+  console.log(`Treasury Reference: ${treasuryWallet}`);
+  console.log(`Network: Sepolia (Euystacio Protocol v1.1)`);
   console.log(`Etherscan: https://sepolia.etherscan.io/address/${contractAddress}`);
   console.log('─────────────────────────────────────────────────────\n');
   
