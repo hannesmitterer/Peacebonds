@@ -4,6 +4,13 @@
  * VCD-01 Node Monitor
  * Monitors node resonance at Ψ₀.₀₄₃, integrity (98.4% target), and Byzantine Fault Tolerance metrics
  * Provides alerting for anomalies
+ * 
+ * NOTE: This is a reference implementation for development and testing.
+ * For production deployment:
+ * - Replace shell commands with native Node.js IPFS and Ethereum client APIs
+ * - Implement actual Byzantine fault detection using consensus data
+ * - Use platform-specific time synchronization libraries
+ * - Add proper error handling and input validation
  */
 
 const { exec } = require('child_process');
@@ -233,6 +240,12 @@ async function checkIntegrity() {
 
 /**
  * Check Byzantine Fault Tolerance metrics
+ * NOTE: This uses simulated data for demonstration.
+ * In production, replace with actual network consensus metrics from:
+ * - Ethereum validator participation data
+ * - IPFS DHT query success rates
+ * - P2P network connectivity metrics
+ * - Blockchain fork detection
  */
 async function checkBFT() {
   try {

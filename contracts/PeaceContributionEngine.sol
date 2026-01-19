@@ -392,10 +392,13 @@ contract PeaceContributionEngine is ERC721Enumerable, AccessControl, ReentrancyG
      * @return True if operational integrity is maintained
      */
     function checkIntegrity() external view returns (bool) {
-        // Calculate integrity based on successful distributions vs allocations
-        if (totalContributions == 0) return true;
+        // Calculate integrity based on successful distributions vs allocated tax
+        uint256 totalTaxAllocated = totalContributions * CONTRIBUTION_RATE / RATE_DENOMINATOR;
+        
+        if (totalTaxAllocated == 0) return true;
 
-        uint256 successRate = (totalDistributed * RATE_DENOMINATOR) / totalContributions;
+        // Integrity is the ratio of distributed funds to allocated tax funds
+        uint256 successRate = (totalDistributed * RATE_DENOMINATOR) / totalTaxAllocated;
         return successRate >= INTEGRITY_THRESHOLD;
     }
 
