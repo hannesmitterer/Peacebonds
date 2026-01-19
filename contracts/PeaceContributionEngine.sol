@@ -5,13 +5,14 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 /**
  * @title PeaceContributionEngine
  * @notice Smart contract for VCD-01 Ethical Dividend (δ_E) tracking and distribution
  * @dev Implements 2.7% universal contribution tax and NFT-based Proof of Impact
  */
-contract PeaceContributionEngine is ERC721Enumerable, AccessControl {
+contract PeaceContributionEngine is ERC721Enumerable, AccessControl, ReentrancyGuard {
     using Counters for Counters.Counter;
 
     // Roles
@@ -148,7 +149,7 @@ contract PeaceContributionEngine is ERC721Enumerable, AccessControl {
      * @notice Make a contribution to the Peace Contribution Engine
      * @dev Automatically deducts 2.7% contribution tax and allocates to categories
      */
-    function contribute() external payable returns (uint256) {
+    function contribute() external payable nonReentrant returns (uint256) {
         require(msg.value > 0, "Contribution must be greater than 0");
 
         // Calculate contribution tax (2.7%)
@@ -425,16 +426,44 @@ contract PeaceContributionEngine is ERC721Enumerable, AccessControl {
     /**
      * @notice Withdraw function (emergency only, requires admin)
      */
-    function emergencyWithdraw(address payable recipient) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function emergencyWithdraw(address payable recipient) external onlyRole(DEFAULT_ADMIN_ROLE) nonReentrant {
         require(recipient != address(0), "Invalid recipient");
         recipient.transfer(address(this).balance);
     }
 
     /**
-     * @notice Receive function to accept ETH
+     * @notice Receive function to accept ETH - contributes automatically
+     * @dev Processes contribution inline to prevent reentrancy
      */
     receive() external payable {
-        // Auto-contribute received ETH
-        this.contribute{value: msg.value}();
+        require(msg.value > 0, "Contribution must be greater than 0");
+
+        // Calculate contribution tax (2.7%) inline
+        uint256 contributionTax = (msg.value * CONTRIBUTION_RATE) / RATE_DENOMINATOR;
+
+        // Create contribution record
+        uint256 contributionId = _contributionIdCounter++;
+        contributions[contributionId] = Contribution({
+            contributor: msg.sender,
+            amount: msg.value,
+            timestamp: block.timestamp,
+            impactScore: 0,
+            category: "PENDING",
+            distributed: false
+        });
+
+        contributorHistory[msg.sender].push(contributionId);
+        totalContributions += msg.value;
+
+        emit ContributionReceived(
+            contributionId,
+            msg.sender,
+            msg.value,
+            contributionTax,
+            "PENDING"
+        );
+
+        // Allocate to categories inline
+        _allocateToCategories(contributionId, contributionTax);
     }
 }
