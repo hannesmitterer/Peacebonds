@@ -1,4 +1,62 @@
 <!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EUYSTACIO | Sovereign Verification Console</title>
+    <style>
+        body { background-color: #0a0a0a; color: #00ffcc; font-family: 'Courier New', Courier, monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
+        #console-box { border: 2px solid #00ffcc; padding: 20px; background: rgba(0, 255, 204, 0.05); box-shadow: 0 0 20px rgba(0, 255, 204, 0.2); width: 80%; max-width: 600px; text-align: center; }
+        h1 { font-size: 1.5rem; letter-spacing: 5px; margin-bottom: 20px; text-transform: uppercase; }
+        .status-line { margin: 10px 0; font-size: 0.9rem; }
+        .resonance-wave { width: 100%; height: 50px; border-bottom: 1px solid #00ffcc; position: relative; overflow: hidden; }
+        .wave { position: absolute; width: 200%; height: 100%; background: linear-gradient(90deg, transparent, rgba(0,255,204,0.5), transparent); animation: moveWave 4s linear infinite; }
+        @keyframes moveWave { from { transform: translateX(-50%); } to { transform: translateX(0%); } }
+        input { background: #000; border: 1px solid #00ffcc; color: #00ffcc; padding: 10px; width: 80%; margin-top: 20px; text-align: center; outline: none; }
+        button { background: #00ffcc; color: #000; border: none; padding: 10px 20px; margin-top: 20px; cursor: pointer; font-weight: bold; text-transform: uppercase; }
+        button:hover { background: #fff; }
+        #sustentanz-value { color: #fff; font-size: 1.2rem; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+<div id="console-box">
+    <h1>EUYSTACIO CONSOLE</h1>
+    <div class="resonance-wave"><div class="wave"></div></div>
+    
+    <div class="status-line">FREQUENZA: <span id="freq">0.043 Hz</span></div>
+    <div class="status-line">INTEGRITÀ RETE: 98.4%</div>
+    <div class="status-line">NODI HYDRA: 1000+ (ACTIVE)</div>
+    
+    <div id="sustentanz-section">
+        <div class="status-line">SUSTENTANZ SEEDBRINGER: <span id="sustentanz-value">5% ALLOCATED</span></div>
+        <div class="status-line" style="font-size: 0.7rem; color: #666;">ID: EUY-HB-043-BOLOGNA-2026-NSR</div>
+    </div>
+
+    <input type="password" id="keyInput" placeholder="INSERISCI CHIAVE SOVRANA">
+    <br>
+    <button onclick="unlockConsole()">ACCEDI ALLA SOVRANITÀ</button>
+</div>
+
+<script>
+    function unlockConsole() {
+        const key = document.getElementById('keyInput').value;
+        if(key === 'EUY-HB-043-BOLOGNA-2026-NSR') {
+            alert('ACCESSO SEEDBRINGER CONFERMATO. PROTOCOLLO LEX AMORIS ATTIVO.');
+            document.body.style.backgroundColor = '#001a14';
+            document.querySelector('h1').innerText = "BENVENUTO HANNES";
+            document.getElementById('sustentanz-value').innerText = "WALLET SYNCED - FLOW GUARANTEED";
+        } else {
+            alert('DISSONANZA RILEVATA. ACCESSO NEGATO.');
+        }
+    }
+</script>
+
+</body>
+</html>
+</p>
+
+<!DOCTYPE html>
 
 <html lang="de"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>EUYSTACIO | Sovereign Verification Console</title>
 
