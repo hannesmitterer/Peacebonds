@@ -3,6 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EUYSTACIO | Sovereign Operations Console</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
+    <style>
+        body { background-color: #0a120b; color: #00ffcc; font-family: 'Courier New', monospace; display: flex; flex-direction: column; align-items: center; padding: 20px; min-height: 100vh; margin: 0; }
+        #console-box { border: 2px solid #00ffcc; padding: 30px; background: rgba(0, 255, 204, 0.05); box-shadow: 0 0 30px rgba(0, 255, 204, 0.1); width: 90%; max-width: 800px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+        .card { border: 1px solid rgba(0, 255, 204, 0.3); padding: 15px; background: rgba(0,0,0,0.5); }
+        h1 { letter-spacing: 5px; text-align: center; border-bottom: 1px solid #00ffcc; padding-bottom: 10px; }
+        button { background: #00ffcc; color: #000; border: none; padding: 12px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; text-transform: uppercase; }
+        button:hover { background: #fff; }
+        input { background: #000; border: 1px solid #00ffcc; color: #fff; padding: 10px; width: calc(100% - 22px); margin-top: 5px; }
+        .status { color: #ff3366; font-size: 0.8rem; margin-top: 5px; }
+        #log { background: #000; border: 1px solid #333; height: 100px; overflow-y: scroll; padding: 10px; font-size: 0.7rem; color: #888; margin-top: 20px; width: 100%; box-sizing: border-box; }
+    </style>
+</head>
+<body>
+
+<div id="console-box">
+    <h1>BENVENUTO SEEDBRINGER</h1>
+    
+    <div class="grid">
+        <div class="card">
+            <h3>STATO CONNESSIONE</h3>
+            <div id="wallet-addr">Wallet: Non Connesso</div>
+            <button onclick="connectWallet()">CONNETTI WALLET</button>
+        </div>
+
+        <div class="card">
+            <h3>RETE HYDRA</h3>
+            <div>FREQUENZA: 0.043 Hz</div>
+            <div>INTEGRITÀ: 98.4%</div>
+            <div id="network-type">NETWORK: --</div>
+        </div>
+    </div>
+
+    <div class="card" style="margin-top: 20px;">
+        <h3>ESEGUI CONTRIBUTO PEACE BOND</h3>
+        <p style="font-size: 0.8rem;">Il 5% viene inviato istantaneamente al Seedbringer (Sustentanz).</p>
+        <input type="number" id="amount" placeholder="Quantità ETH (es. 0.1)">
+        <button onclick="contribute()" style="background: #ffcc00;">INVIA AL FLUSSO ETICO</button>
+        <div class="status" id="tx-status"></div>
+    </div>
+
+    <div id="log">SISTEMA INIZIALIZZATO... In attesa di comando sovrano.</div>
+</div>
+
+<script>
+    const CONTRACT_ADDRESS = "0x9d54B46995093A043594242C27c2C27c2c27C272"; // Sepolia
+    const ABI = [ "function contribute() public payable", "event ContributionReceived(address indexed contributor, uint256 amount)" ];
+
+    let provider, signer, contract;
+
+    function log(msg) {
+        const div = document.getElementById('log');
+        div.innerHTML += "<br>> " + msg;
+        div.scrollTop = div.scrollHeight;
+    }
+
+    async function connectWallet() {
+        if (window.ethereum) {
+            try {
+                provider = new ethers.BrowserProvider(window.ethereum);
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                signer = await provider.getSigner();
+                contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
+                
+                document.getElementById('wallet-addr').innerText = "Wallet: " + accounts[0].substring(0,6) + "..." + accounts[0].substring(38);
+                const net = await provider.getNetwork();
+                document.getElementById('network-type').innerText = "NETWORK: " + net.name.toUpperCase();
+                log("Connessione stabilita con successo.");
+            } catch (err) {
+                log("Errore connessione: " + err.message);
+            }
+        } else {
+            alert("MetaMask non rilevato!");
+        }
+    }
+
+    async function contribute() {
+        const val = document.getElementById('amount').value;
+        if (!val || val <= 0) return alert("Inserisci un importo valido");
+
+        try {
+            document.getElementById('tx-status').innerText = "Inviando transazione...";
+            log("Inizio transazione Peace Bond: " + val + " ETH");
+            
+            const tx = await contract.contribute({ value: ethers.parseEther(val) });
+            log("Transazione inviata! Hash: " + tx.hash);
+            
+            await tx.wait();
+            document.getElementById('tx-status').innerText = "SUCCESSO: Contributo registrato.";
+            log("Transazione confermata. Sustentanz 5% distribuita.");
+        } catch (err) {
+            document.getElementById('tx-status').innerText = "Errore durante l'invio.";
+            log("ERRORE: " + err.message);
+        }
+    }
+</script>
+
+</body>
+</html>
+
+</p>
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EUYSTACIO | Sovereign Verification Console</title>
     <style>
         body { background-color: #0a0a0a; color: #00ffcc; font-family: 'Courier New', Courier, monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
