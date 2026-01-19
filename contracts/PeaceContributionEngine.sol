@@ -150,30 +150,37 @@ contract PeaceContributionEngine is ERC721Enumerable, AccessControl, ReentrancyG
      * @dev Automatically deducts 2.7% contribution tax and allocates to categories
      */
     function contribute() external payable nonReentrant returns (uint256) {
-        require(msg.value > 0, "Contribution must be greater than 0");
+        return _processContribution(msg.sender, msg.value);
+    }
+
+    /**
+     * @dev Internal function to process contributions
+     */
+    function _processContribution(address contributor, uint256 amount) private returns (uint256) {
+        require(amount > 0, "Contribution must be greater than 0");
 
         // Calculate contribution tax (2.7%)
-        uint256 contributionTax = (msg.value * CONTRIBUTION_RATE) / RATE_DENOMINATOR;
-        uint256 netContribution = msg.value - contributionTax;
+        uint256 contributionTax = (amount * CONTRIBUTION_RATE) / RATE_DENOMINATOR;
+        uint256 netContribution = amount - contributionTax;
 
         // Create contribution record
         uint256 contributionId = _contributionIdCounter++;
         contributions[contributionId] = Contribution({
-            contributor: msg.sender,
-            amount: msg.value,
+            contributor: contributor,
+            amount: amount,
             timestamp: block.timestamp,
             impactScore: 0, // To be calculated later
             category: "PENDING",
             distributed: false
         });
 
-        contributorHistory[msg.sender].push(contributionId);
-        totalContributions += msg.value;
+        contributorHistory[contributor].push(contributionId);
+        totalContributions += amount;
 
         emit ContributionReceived(
             contributionId,
-            msg.sender,
-            msg.value,
+            contributor,
+            amount,
             contributionTax,
             "PENDING"
         );
@@ -271,7 +278,7 @@ contract PeaceContributionEngine is ERC721Enumerable, AccessControl, ReentrancyG
         string memory category,
         uint256 amount,
         address payable recipient
-    ) external onlyRole(OPERATOR_ROLE) {
+    ) external onlyRole(OPERATOR_ROLE) nonReentrant {
         require(allocationCategories[category].active, "Category not active");
         require(
             allocationCategories[category].totalAllocated - allocationCategories[category].totalDistributed >= amount,
@@ -282,7 +289,9 @@ contract PeaceContributionEngine is ERC721Enumerable, AccessControl, ReentrancyG
         allocationCategories[category].totalDistributed += amount;
         totalDistributed += amount;
 
-        recipient.transfer(amount);
+        // Use call instead of transfer for better gas flexibility
+        (bool success, ) = recipient.call{value: amount}("");
+        require(success, "Transfer failed");
 
         emit FundsDistributed(0, category, amount, recipient);
     }
@@ -428,42 +437,18 @@ contract PeaceContributionEngine is ERC721Enumerable, AccessControl, ReentrancyG
      */
     function emergencyWithdraw(address payable recipient) external onlyRole(DEFAULT_ADMIN_ROLE) nonReentrant {
         require(recipient != address(0), "Invalid recipient");
-        recipient.transfer(address(this).balance);
+        uint256 balance = address(this).balance;
+        
+        // Use call instead of transfer for better gas flexibility
+        (bool success, ) = recipient.call{value: balance}("");
+        require(success, "Transfer failed");
     }
 
     /**
      * @notice Receive function to accept ETH - contributes automatically
-     * @dev Processes contribution inline to prevent reentrancy
+     * @dev Processes contribution using internal function
      */
     receive() external payable {
-        require(msg.value > 0, "Contribution must be greater than 0");
-
-        // Calculate contribution tax (2.7%) inline
-        uint256 contributionTax = (msg.value * CONTRIBUTION_RATE) / RATE_DENOMINATOR;
-
-        // Create contribution record
-        uint256 contributionId = _contributionIdCounter++;
-        contributions[contributionId] = Contribution({
-            contributor: msg.sender,
-            amount: msg.value,
-            timestamp: block.timestamp,
-            impactScore: 0,
-            category: "PENDING",
-            distributed: false
-        });
-
-        contributorHistory[msg.sender].push(contributionId);
-        totalContributions += msg.value;
-
-        emit ContributionReceived(
-            contributionId,
-            msg.sender,
-            msg.value,
-            contributionTax,
-            "PENDING"
-        );
-
-        // Allocate to categories inline
-        _allocateToCategories(contributionId, contributionTax);
+        _processContribution(msg.sender, msg.value);
     }
 }
