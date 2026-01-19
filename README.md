@@ -1,12 +1,12 @@
 # PeaceBonds (Euystacio Protocol) v1.1
 
-A minimal, open protocol for public notarization and verification of manifest-like documents using IPFS, cryptographic signatures, and blockchain anchoring.
+A minimal, open protocol for public notarization and verification of manifest-like documents using IPFS, cryptographic signatures, and blockchain anchoring. Now featuring the **VCD-01 Framework** for distributed ethical finance.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Overview
 
-PeaceBonds provides proof-of-existence, authorship attestation, and public verifiability for documents without relying on trusted intermediaries.
+PeaceBonds provides proof-of-existence, authorship attestation, and public verifiability for documents without relying on trusted intermediaries. The VCD-01 (Verified Contribution Distribution) framework extends this foundation to enable transparent distribution of resources for energy, water, and healthcare sustainability across a global network of nodes.
 
 **Key Features:**
 - ✅ ERC-721 smart contract for blockchain anchoring
@@ -15,6 +15,10 @@ PeaceBonds provides proof-of-existence, authorship attestation, and public verif
 - ✅ Complete 6-step verification procedure
 - ✅ CLI tool for easy creation and verification
 - ✅ Support for multiple blockchain networks and IPFS providers
+- ✅ **VCD-01 Distributed Ethical Finance Framework**
+- ✅ **Peace Contribution Engine with 2.7% universal contribution tax**
+- ✅ **Proof of Impact NFT system for tracking real-world outcomes**
+- ✅ **Node monitoring with Ψ₀.₀₄₃ resonance synchronization**
 
 ## Quick Start
 
@@ -68,11 +72,18 @@ node dist/cli/index.js verify TOKEN_ID \
 
 ## Documentation
 
+### Core Protocol
 - **[SPEC.md](SPEC.md)** - Protocol specification
 - **[docs/README.md](docs/README.md)** - Detailed overview
 - **[docs/USAGE.md](docs/USAGE.md)** - Usage guide and examples
 - **[docs/API.md](docs/API.md)** - Complete API reference
 - **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** - System architecture
+
+### VCD-01 Framework
+- **[docs/VCD-01_Manifesto.md](docs/VCD-01_Manifesto.md)** - VCD-01 framework manifesto and principles
+- **[docs/NODE_SETUP.md](docs/NODE_SETUP.md)** - Complete guide for setting up VCD-01 nodes
+- **[docs/GOVERNANCE.md](docs/GOVERNANCE.md)** - Governance framework and procedures
+- **[docs/SECURITY.md](docs/SECURITY.md)** - Security protocols and Quantum Red Shield (QRS)
 
 ## How It Works
 
@@ -93,12 +104,122 @@ node dist/cli/index.js verify TOKEN_ID \
 
 If all steps succeed, the PeaceBond is valid.
 
+## VCD-01 Distributed Ethical Finance Framework
+
+The VCD-01 framework represents a paradigm shift from scarcity-based economics to shared sovereignty through distributed ethical finance. Operating at resonance frequency Ψ₀.₀₄₃, the framework enables transparent distribution of critical IP for energy, water, and healthcare sustainability.
+
+### Core Modules
+
+**IDRO (Integrated Distributed Resource Optimization)**
+- Decentralized water purification network
+- Renewable energy grid optimization
+- Resource allocation based on need
+- Real-time monitoring and adaptive distribution
+
+**HELIOS (Healthcare & Education Livelihood Infrastructure Operating System)**
+- Telemedicine network across 1000+ nodes
+- Open-source medical knowledge distribution
+- Educational resource sharing
+- Community health worker support systems
+
+### Ethical Dividend (δ_E)
+
+The Peace Contribution Engine implements a 2.7% universal contribution tax that funds:
+- 40% - IDRO infrastructure deployment
+- 35% - HELIOS network expansion
+- 15% - Research and development
+- 10% - Network operations
+
+**Proof of Impact NFTs** track real-world outcomes:
+- Lives sustained (water/energy access)
+- Healthcare access metrics
+- Educational hours facilitated
+- Resource efficiency improvements
+
+### Node Operators
+
+Run a VCD-01 node to participate in the distributed network:
+
+```bash
+# Clone repository
+git clone https://github.com/hannesmitterer/Peacebonds.git
+cd Peacebonds
+
+# Install dependencies
+npm install
+
+# Configure node
+cp .env.example .env
+nano .env  # Set NODE_TYPE, RESONANCE_FREQUENCY, etc.
+
+# Start node monitoring
+node scripts/monitoring/node-monitor.js
+
+# Deploy smart contracts
+npm run compile
+npx hardhat run scripts/deploy.ts --network sepolia
+```
+
+**Node Requirements:**
+- Minimum 98.4% uptime
+- Ψ₀.₀₄₃ resonance synchronization
+- Byzantine Fault Tolerance compliance
+- IPFS pinning capacity (min 100GB)
+
+**See [NODE_SETUP.md](docs/NODE_SETUP.md) for complete setup instructions.**
+
+### Governance
+
+Multi-layered governance structure:
+- **LOGOS Council**: 9 elected members, 5/9 threshold for protocol changes
+- **VE Operators**: 5 technical operators, 3/5 threshold for fund releases
+- **Community Delegates**: Regional representatives with voting rights
+- **Node Operators**: Vote weight proportional to impact
+
+All governance actions are:
+- Recorded on-chain with multi-signature approval
+- Time-locked (72 hours) with community veto rights
+- Publicly auditable and transparent
+- Subject to Lex Amoris (Law of Love) compliance
+
+**See [GOVERNANCE.md](docs/GOVERNANCE.md) for detailed procedures.**
+
+### Security: Quantum Red Shield (QRS)
+
+Multi-layered security protocol:
+
+**Layer 1 - Cryptographic Protection:**
+- Quantum-resistant signatures (CRYSTALS-Dilithium)
+- Multi-signature transaction validation
+- Zero-knowledge proof verification
+
+**Layer 2 - Network Security:**
+- Byzantine Fault Tolerance (BFT) consensus
+- DDoS mitigation and encrypted communication
+- Network segmentation and monitoring
+
+**Layer 3 - Compliance Enforcement:**
+- NSR (Non-Compliance Sovereignty Response)
+- Automated asset freezes for violations
+- Community-governed penalty framework
+
+**Immutability Guarantees:**
+- IPFS cross-linking with 10+ pinning nodes
+- Arweave mirroring for permanent storage
+- Geographic distribution across 5+ continents
+
+**See [SECURITY.md](docs/SECURITY.md) for complete security documentation.**
+
 ## Components
 
-### Smart Contract
+### Smart Contracts
 - **PeaceBondAnchor.sol**: ERC-721 contract for anchoring
-- Functions: `anchor()`, `verify()`, `getAnchor()`
-- Events: `PeaceBondAnchored`, `PeaceBondVerified`
+  - Functions: `anchor()`, `verify()`, `getAnchor()`
+  - Events: `PeaceBondAnchored`, `PeaceBondVerified`
+- **PeaceContributionEngine.sol**: VCD-01 contribution and impact tracking
+  - Functions: `contribute()`, `mintProofOfImpact()`, `distributeFunds()`
+  - Features: 2.7% contribution tax, NFT-based impact verification
+  - Allocation: IDRO (40%), HELIOS (35%), R&D (15%), Operations (10%)
 
 ### TypeScript/JavaScript SDK
 - Signature generation and verification
