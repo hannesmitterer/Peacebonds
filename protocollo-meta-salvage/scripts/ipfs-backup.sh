@@ -131,7 +131,18 @@ create_backup() {
         return 1
     fi
     
-    local original_size=$(stat -f%z "${tarball}" 2>/dev/null || stat -c%s "${tarball}")
+    # Get file size in a portable way
+    local original_size
+    if stat --version 2>&1 | grep -q GNU; then
+        # GNU stat (Linux)
+        original_size=$(stat -c%s "${tarball}")
+    elif stat -f%z "${tarball}" 2>/dev/null; then
+        # BSD stat (macOS)
+        original_size=$(stat -f%z "${tarball}")
+    else
+        # Fallback: use wc (universal)
+        original_size=$(wc -c < "${tarball}")
+    fi
     log_info "Tarball size: $(numfmt --to=iec-i --suffix=B ${original_size} 2>/dev/null || echo ${original_size} bytes)"
     
     # Calculate checksum
@@ -149,7 +160,15 @@ create_backup() {
         return 1
     fi
     
-    local encrypted_size=$(stat -f%z "${encrypted_file}" 2>/dev/null || stat -c%s "${encrypted_file}")
+    # Get encrypted file size
+    local encrypted_size
+    if stat --version 2>&1 | grep -q GNU; then
+        encrypted_size=$(stat -c%s "${encrypted_file}")
+    elif stat -f%z "${encrypted_file}" 2>/dev/null; then
+        encrypted_size=$(stat -f%z "${encrypted_file}")
+    else
+        encrypted_size=$(wc -c < "${encrypted_file}")
+    fi
     log_info "Encrypted size: $(numfmt --to=iec-i --suffix=B ${encrypted_size} 2>/dev/null || echo ${encrypted_size} bytes)"
     
     # Upload to IPFS

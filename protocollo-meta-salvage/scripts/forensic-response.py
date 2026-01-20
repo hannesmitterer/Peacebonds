@@ -15,6 +15,13 @@ from datetime import datetime
 from collections import defaultdict
 from typing import Dict, List, Optional
 
+# Optional requests import for Loki integration
+try:
+    import requests
+    REQUESTS_AVAILABLE = True
+except ImportError:
+    REQUESTS_AVAILABLE = False
+
 # Configuration
 LOG_FILE = os.getenv('LOG_FILE', '/var/log/peacebonds/security.log')
 LOKI_URL = os.getenv('LOKI_URL', 'http://localhost:3100')
@@ -156,10 +163,10 @@ class ForensicResponse:
         try:
             print(f"[{datetime.now().isoformat()}] FORENSIC ALERT: Quarantining IP {ip}")
             
-            # Block IP using iptables
-            subprocess.run(['iptables', '-A', 'INPUT', '-s', ip, '-j', 'DROP'],
+            # Block IP using iptables (insert at beginning to ensure priority)
+            subprocess.run(['iptables', '-I', 'INPUT', '1', '-s', ip, '-j', 'DROP'],
                          check=False, capture_output=True)
-            subprocess.run(['iptables', '-A', 'OUTPUT', '-d', ip, '-j', 'DROP'],
+            subprocess.run(['iptables', '-I', 'OUTPUT', '1', '-d', ip, '-j', 'DROP'],
                          check=False, capture_output=True)
             
             self.quarantined_ips.add(ip)
@@ -187,17 +194,17 @@ class ForensicResponse:
             f.write(json.dumps(log_entry) + '\n')
         
         # Send to Loki if available
-        try:
-            import requests
-            loki_payload = {
-                'streams': [{
-                    'stream': {'job': 'forensic-response', 'level': 'alert'},
-                    'values': [[str(int(time.time() * 1e9)), json.dumps(log_entry)]]
-                }]
-            }
-            requests.post(f'{LOKI_URL}/loki/api/v1/push', json=loki_payload, timeout=5)
-        except Exception:
-            pass  # Silently fail if Loki is not available
+        if REQUESTS_AVAILABLE:
+            try:
+                loki_payload = {
+                    'streams': [{
+                        'stream': {'job': 'forensic-response', 'level': 'alert'},
+                        'values': [[str(int(time.time() * 1e9)), json.dumps(log_entry)]]
+                    }]
+                }
+                requests.post(f'{LOKI_URL}/loki/api/v1/push', json=loki_payload, timeout=5)
+            except Exception:
+                pass  # Silently fail if Loki is not available
     
     def monitor_logs(self):
         """Main monitoring loop"""
