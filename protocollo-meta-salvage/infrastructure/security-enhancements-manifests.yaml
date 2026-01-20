@@ -1,0 +1,384 @@
+# Scheduled Backups CronJob Configuration
+# Automated daily backups with IPFS and GnuPG encryption
+
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: peacebonds-backup
+  namespace: protocollo-meta-salvage
+  labels:
+    app: peacebonds
+    component: backup
+spec:
+  # Run daily at 2 AM
+  schedule: "0 2 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 7
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: peacebonds
+            component: backup
+        spec:
+          restartPolicy: OnFailure
+          serviceAccountName: peacebonds-backup
+          containers:
+          - name: ipfs-backup
+            image: ipfs/kubo:latest
+            command: ["/scripts/ipfs-backup.sh"]
+            args: ["create"]
+            env:
+            - name: BACKUP_SOURCE
+              value: "/data"
+            - name: BACKUP_METADATA_DIR
+              value: "/metadata"
+            - name: GPG_RECIPIENT
+              value: "peacebonds@backup"
+            - name: IPFS_API
+              value: "http://ipfs:5001"
+            - name: RETENTION_DAYS
+              value: "90"
+            volumeMounts:
+            - name: data
+              mountPath: /data
+              readOnly: true
+            - name: metadata
+              mountPath: /metadata
+            - name: scripts
+              mountPath: /scripts
+            - name: gpg-keys
+              mountPath: /root/.gnupg
+              readOnly: true
+            resources:
+              requests:
+                memory: "256Mi"
+                cpu: "100m"
+              limits:
+                memory: "1Gi"
+                cpu: "500m"
+          volumes:
+          - name: data
+            persistentVolumeClaim:
+              claimName: peacebonds-data
+          - name: metadata
+            persistentVolumeClaim:
+              claimName: backup-metadata
+          - name: scripts
+            configMap:
+              name: backup-scripts
+              defaultMode: 0755
+          - name: gpg-keys
+            secret:
+              secretName: backup-gpg-keys
+              defaultMode: 0600
+
+---
+
+# Weekly backup cleanup CronJob
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: peacebonds-backup-cleanup
+  namespace: protocollo-meta-salvage
+spec:
+  schedule: "0 3 * * 0"  # Weekly on Sunday at 3 AM
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          serviceAccountName: peacebonds-backup
+          containers:
+          - name: cleanup
+            image: ipfs/kubo:latest
+            command: ["/scripts/ipfs-backup.sh"]
+            args: ["cleanup"]
+            env:
+            - name: BACKUP_METADATA_DIR
+              value: "/metadata"
+            - name: IPFS_API
+              value: "http://ipfs:5001"
+            - name: RETENTION_DAYS
+              value: "90"
+            volumeMounts:
+            - name: metadata
+              mountPath: /metadata
+            - name: scripts
+              mountPath: /scripts
+          volumes:
+          - name: metadata
+            persistentVolumeClaim:
+              claimName: backup-metadata
+          - name: scripts
+            configMap:
+              name: backup-scripts
+              defaultMode: 0755
+
+---
+
+# Forensic Response Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: forensic-response
+  namespace: protocollo-meta-salvage
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: peacebonds
+      component: forensic-response
+  template:
+    metadata:
+      labels:
+        app: peacebonds
+        component: forensic-response
+    spec:
+      serviceAccountName: forensic-response
+      containers:
+      - name: forensic-monitor
+        image: python:3.11-slim
+        command: ["python3", "/scripts/forensic-response.py"]
+        env:
+        - name: LOG_FILE
+          value: "/var/log/peacebonds/security.log"
+        - name: LOKI_URL
+          value: "http://loki:3100"
+        - name: TOR_ENABLED
+          value: "true"
+        - name: VPN_ENABLED
+          value: "true"
+        - name: CHECK_INTERVAL
+          value: "30"
+        - name: ALERT_THRESHOLD
+          value: "5"
+        - name: QUARANTINE_THRESHOLD
+          value: "10"
+        volumeMounts:
+        - name: logs
+          mountPath: /var/log/peacebonds
+        - name: scripts
+          mountPath: /scripts
+        - name: forensic-logs
+          mountPath: /var/log/peacebonds/forensic
+        securityContext:
+          capabilities:
+            add:
+            - NET_ADMIN  # Required for iptables
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "50m"
+          limits:
+            memory: "512Mi"
+            cpu: "200m"
+      volumes:
+      - name: logs
+        hostPath:
+          path: /var/log/peacebonds
+          type: DirectoryOrCreate
+      - name: scripts
+        configMap:
+          name: forensic-scripts
+          defaultMode: 0755
+      - name: forensic-logs
+        persistentVolumeClaim:
+          claimName: forensic-logs
+
+---
+
+# QUIC Server Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: quic-server
+  namespace: protocollo-meta-salvage
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: peacebonds
+      component: quic-server
+  template:
+    metadata:
+      labels:
+        app: peacebonds
+        component: quic-server
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9090"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+      - name: quic-server
+        image: cloudflare/quiche:latest
+        ports:
+        - name: quic
+          containerPort: 443
+          protocol: UDP
+        - name: quic-alt
+          containerPort: 8443
+          protocol: UDP
+        - name: metrics
+          containerPort: 9090
+          protocol: TCP
+        env:
+        - name: RUST_LOG
+          value: "info"
+        volumeMounts:
+        - name: tls-certs
+          mountPath: /etc/peacebonds/tls
+          readOnly: true
+        - name: config
+          mountPath: /etc/peacebonds/config
+        - name: www
+          mountPath: /var/www/peacebonds
+        livenessProbe:
+          tcpSocket:
+            port: 9090
+          initialDelaySeconds: 10
+          periodSeconds: 30
+        readinessProbe:
+          tcpSocket:
+            port: 9090
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+          readOnlyRootFilesystem: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+      volumes:
+      - name: tls-certs
+        secret:
+          secretName: quic-tls-certs
+      - name: config
+        configMap:
+          name: quic-config
+      - name: www
+        emptyDir: {}
+
+---
+
+# QUIC Server Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: quic-server
+  namespace: protocollo-meta-salvage
+spec:
+  type: LoadBalancer
+  selector:
+    app: peacebonds
+    component: quic-server
+  ports:
+  - name: quic
+    port: 443
+    targetPort: 443
+    protocol: UDP
+  - name: quic-alt
+    port: 8443
+    targetPort: 8443
+    protocol: UDP
+  - name: metrics
+    port: 9090
+    targetPort: 9090
+    protocol: TCP
+
+---
+
+# ServiceAccount for backups
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: peacebonds-backup
+  namespace: protocollo-meta-salvage
+
+---
+
+# ServiceAccount for forensic response
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: forensic-response
+  namespace: protocollo-meta-salvage
+
+---
+
+# PersistentVolumeClaim for backup metadata
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: backup-metadata
+  namespace: protocollo-meta-salvage
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+
+# PersistentVolumeClaim for forensic logs
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: forensic-logs
+  namespace: protocollo-meta-salvage
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+
+---
+
+# ConfigMap for backup scripts
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backup-scripts
+  namespace: protocollo-meta-salvage
+data:
+  ipfs-backup.sh: |
+    # Script content will be mounted from the repository
+
+---
+
+# ConfigMap for forensic scripts
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: forensic-scripts
+  namespace: protocollo-meta-salvage
+data:
+  forensic-response.py: |
+    # Script content will be mounted from the repository
+
+---
+
+# ConfigMap for QUIC configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: quic-config
+  namespace: protocollo-meta-salvage
+data:
+  quic-config.yaml: |
+    # QUIC configuration will be mounted from the repository
