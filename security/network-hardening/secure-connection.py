@@ -245,12 +245,18 @@ def example_server():
     manager = SecureConnectionManager(config)
     
     # Create server socket
+    # Note: Using '0.0.0.0' for demonstration purposes only
+    # In production, bind to specific interface (e.g., '127.0.0.1' for localhost only)
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    server_socket.bind(('0.0.0.0', 8443))
+    
+    # For production, use specific interface:
+    # server_socket.bind(('127.0.0.1', 8443))  # localhost only
+    # server_socket.bind(('192.168.1.100', 8443))  # specific IP
+    server_socket.bind(('127.0.0.1', 8443))  # Bind to localhost for security
     server_socket.listen(5)
     
-    logger.info("Server listening on port 8443 with TLS 1.3")
+    logger.info("Server listening on 127.0.0.1:8443 with TLS 1.3")
     
     # Wrap with TLS
     secure_socket = manager.wrap_socket_server(server_socket)
