@@ -46,3 +46,21 @@ temp/
 .coverage_artifacts/
 .coverage_cache/
 .coverage_contracts/
+
+# Security - Do not commit sensitive files
+*.key
+*.pem
+*.p12
+*.pfx
+/var/log/peacebonds/
+/var/lib/peacebonds/
+/var/backups/peacebonds/
+
+# Monitoring data
+grafana.db
+/var/lib/grafana/
+/var/lib/prometheus/
+/tmp/loki/
+
+# Docker volumes
+docker-compose.override.yml
