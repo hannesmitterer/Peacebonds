@@ -224,13 +224,15 @@ class SecureConnectionManager:
                 logger.error(f"Connection does not use TLS 1.3: {version}")
                 return False
             
-            # Verify cipher suite
-            if cipher and cipher[0] in self.config.config['cipher_suites']:
-                logger.info("Connection uses approved cipher suite")
+            # For TLS 1.3, cipher verification is less critical since 
+            # only secure ciphers are supported, but we still log the cipher used
+            if cipher:
+                logger.info(f"Using cipher: {cipher[0]}")
                 return True
             else:
-                logger.warning(f"Connection uses non-approved cipher: {cipher}")
-                return True  # Still allow but log warning
+                logger.warning("Could not determine cipher suite")
+                # Still return True since we verified TLS 1.3
+                return True
                 
         except Exception as e:
             logger.error(f"Error verifying connection security: {e}")

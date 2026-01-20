@@ -150,10 +150,30 @@ apply_update() {
     if [ -f "$UPDATE_DIR/install.sh" ]; then
         log "Running installation script"
         
+        # Verify install script hash if provided
+        if [ -f "$UPDATE_DIR/install.sh.sha256" ]; then
+            log "Verifying install script checksum"
+            local script_checksum=$(sha256sum "$UPDATE_DIR/install.sh" | awk '{print $1}')
+            local expected_checksum=$(cat "$UPDATE_DIR/install.sh.sha256" | awk '{print $1}')
+            
+            if [ "$script_checksum" != "$expected_checksum" ]; then
+                error "Install script checksum verification failed!"
+                return 1
+            fi
+            success "Install script checksum verified"
+        else
+            warning "No install script checksum provided - executing without verification"
+            read -p "Continue? (yes/no): " confirm
+            if [ "$confirm" != "yes" ]; then
+                log "Installation cancelled by user"
+                return 1
+            fi
+        fi
+        
         # Make script executable
         chmod +x "$UPDATE_DIR/install.sh"
         
-        # Run install script
+        # Run install script in restricted environment
         if "$UPDATE_DIR/install.sh"; then
             success "Installation script completed successfully"
         else

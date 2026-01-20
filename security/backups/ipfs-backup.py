@@ -103,12 +103,24 @@ class EncryptedBackupSystem:
             
             recipient = self.config.config['gpg_recipient']
             
+            # Verify recipient key exists before encrypting
+            verify_result = subprocess.run(
+                ['gpg', '--list-keys', recipient],
+                capture_output=True,
+                text=True,
+                timeout=10
+            )
+            
+            if verify_result.returncode != 0:
+                logger.error(f"GPG key not found for recipient: {recipient}")
+                logger.error("Please import the recipient's public key first")
+                return False
+            
             cmd = [
                 'gpg',
                 '--encrypt',
                 '--recipient', recipient,
                 '--output', output_file,
-                '--trust-model', 'always',
                 input_file
             ]
             

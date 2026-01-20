@@ -205,9 +205,15 @@ class ForensicResponseSystem:
         try:
             logger.warning("FORENSIC ACTION: Activating Tor routing")
             
+            # Validate service name to prevent command injection
+            service_name = self.config.config['tor_config']['service_name']
+            if not service_name.isalnum() and service_name not in ['tor', 'tor.service']:
+                logger.error(f"Invalid service name: {service_name}")
+                return False
+            
             # Start Tor service
             result = subprocess.run(
-                ['systemctl', 'start', self.config.config['tor_config']['service_name']],
+                ['systemctl', 'start', service_name],
                 capture_output=True,
                 text=True,
                 timeout=30
@@ -237,9 +243,15 @@ class ForensicResponseSystem:
         try:
             logger.warning("FORENSIC ACTION: Activating VPN routing")
             
+            # Validate service name to prevent command injection
+            service_name = self.config.config['vpn_config']['service_name']
+            if not service_name.isalnum() and service_name not in ['openvpn', 'openvpn.service']:
+                logger.error(f"Invalid service name: {service_name}")
+                return False
+            
             # Start VPN service
             result = subprocess.run(
-                ['systemctl', 'start', self.config.config['vpn_config']['service_name']],
+                ['systemctl', 'start', service_name],
                 capture_output=True,
                 text=True,
                 timeout=30
