@@ -15,6 +15,11 @@ PeaceBonds provides proof-of-existence, authorship attestation, and public verif
 - ✅ Complete 6-step verification procedure
 - ✅ CLI tool for easy creation and verification
 - ✅ Support for multiple blockchain networks and IPFS providers
+- ✅ **Real-time monitoring dashboard** (Grafana + Loki)
+- ✅ **Automated forensic response system** (Tor/VPN routing)
+- ✅ **Secure firmware updates** with cryptographic verification
+- ✅ **Distributed encrypted backups** (IPFS + GnuPG)
+- ✅ **Communication hardening** (QUIC + TLS 1.3)
 
 ## Quick Start
 
@@ -187,9 +192,58 @@ npm run clean
   /cli                  # CLI tool
   /utils                # Utility functions
 /scripts                # Deployment scripts
+/security               # Security and resilience features
+  /forensics            # Automated forensic response
+  /firmware-updates     # Secure firmware updates
+  /backups              # Encrypted distributed backups
+  /network-hardening    # QUIC + TLS 1.3 implementation
+/monitoring             # Monitoring infrastructure
+  /grafana              # Grafana dashboards
+  /loki                 # Loki configuration
 /test                   # Tests
 /examples               # Example manifests
 /docs                   # Documentation
+```
+
+## Security Features
+
+PeaceBonds includes comprehensive security and resilience features for decentralized operations. See [security/README.md](security/README.md) for detailed documentation.
+
+### Quick Start - Security Features
+
+**1. Real-time Monitoring Dashboard**
+```bash
+# Start monitoring stack with Docker Compose
+docker-compose -f docker-compose.monitoring.yml up -d
+
+# Access Grafana at http://localhost:3000
+# Default credentials: admin / peacebonds_monitoring_admin
+```
+
+**2. Forensic Response System**
+```bash
+cd security/forensics
+sudo cp forensic-config.json /etc/peacebonds/
+sudo python3 log-watcher.py
+```
+
+**3. Secure Firmware Updates**
+```bash
+cd security/firmware-updates
+sudo ./firmware-update.sh update-manifest.json
+```
+
+**4. Encrypted Backups**
+```bash
+cd security/backups
+python3 ipfs-backup.py backup
+```
+
+**5. Network Hardening (QUIC + TLS 1.3)**
+```bash
+cd security/network-hardening
+sudo ./setup-quic.sh
+python3 secure-connection.py server
 ```
 
 ## License

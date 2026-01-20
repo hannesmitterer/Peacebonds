@@ -1,0 +1,16 @@
+{
+  "version": "1.0.0",
+  "firmware_cid": "QmExample123FirmwarePackage",
+  "checksum_cid": "QmExample123Checksum",
+  "signature_cid": "QmExample123Signature",
+  "release_date": "2026-01-20",
+  "description": "PeaceBonds firmware update with security enhancements",
+  "changelog": [
+    "Added QUIC protocol support",
+    "Enhanced TLS 1.3 configuration",
+    "Security patches for known vulnerabilities",
+    "Performance improvements"
+  ],
+  "minimum_version": "0.9.0",
+  "rollback_supported": true
+}

@@ -1,0 +1,14 @@
+{
+  "backup_paths": [
+    "/var/lib/peacebonds/data",
+    "/etc/peacebonds",
+    "/var/lib/peacebonds/firmware"
+  ],
+  "backup_dir": "/var/backups/peacebonds",
+  "gpg_recipient": "peacebonds@example.com",
+  "ipfs_api_url": "http://127.0.0.1:5001",
+  "retention_days": 30,
+  "schedule": "daily",
+  "compression": "gzip",
+  "encryption": "gpg"
+}

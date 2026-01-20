@@ -1,0 +1,20 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+RUN pip install --no-cache-dir prometheus-client
+
+# Copy metrics exporter
+COPY protocollo-meta-salvage/monitoring/metrics-exporter.py /app/
+
+# Expose metrics port
+EXPOSE 9100
+
+# Run metrics exporter
+CMD ["python3", "metrics-exporter.py"]

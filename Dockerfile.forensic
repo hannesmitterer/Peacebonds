@@ -1,0 +1,24 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    tor \
+    openvpn \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+RUN pip install --no-cache-dir \
+    prometheus-client
+
+# Create log directory
+RUN mkdir -p /var/log/peacebonds
+
+# Copy forensic watcher
+COPY security/forensics/log-watcher.py /app/
+COPY security/forensics/forensic-config.json /etc/peacebonds/forensic-config.json
+
+# Run forensic watcher
+CMD ["python3", "log-watcher.py"]
