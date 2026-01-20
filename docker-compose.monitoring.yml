@@ -1,0 +1,104 @@
+version: '3.8'
+
+services:
+  # Prometheus (from protocollo-meta-salvage)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: peacebonds-prometheus
+    volumes:
+      - ./protocollo-meta-salvage/config/prometheus-config.yaml:/etc/prometheus/prometheus.yml
+      - ./protocollo-meta-salvage/config/prometheus-rules.yaml:/etc/prometheus/rules.yml
+      - prometheus-data:/prometheus
+    ports:
+      - "9090:9090"
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    networks:
+      - peacebonds-network
+
+  # Loki for log aggregation
+  loki:
+    image: grafana/loki:latest
+    container_name: peacebonds-loki
+    volumes:
+      - ./monitoring/loki/loki-config.yaml:/etc/loki/config.yaml
+      - loki-data:/tmp/loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/config.yaml
+    networks:
+      - peacebonds-network
+
+  # Grafana for visualization
+  grafana:
+    image: grafana/grafana:latest
+    container_name: peacebonds-grafana
+    volumes:
+      - ./monitoring/grafana/grafana.ini:/etc/grafana/grafana.ini
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+      - ./monitoring/grafana/dashboards:/etc/grafana/dashboards
+      - grafana-data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=peacebonds_monitoring_admin
+    depends_on:
+      - prometheus
+      - loki
+    networks:
+      - peacebonds-network
+
+  # Metrics Exporter (from protocollo-meta-salvage)
+  metrics-exporter:
+    build:
+      context: .
+      dockerfile: Dockerfile.metrics
+    container_name: peacebonds-metrics-exporter
+    volumes:
+      - ./protocollo-meta-salvage/monitoring/metrics-exporter.py:/app/metrics-exporter.py
+    ports:
+      - "9100:9100"
+    networks:
+      - peacebonds-network
+
+  # IPFS node for backups and firmware distribution
+  ipfs:
+    image: ipfs/kubo:latest
+    container_name: peacebonds-ipfs
+    volumes:
+      - ipfs-data:/data/ipfs
+    ports:
+      - "4001:4001"    # IPFS swarm
+      - "5001:5001"    # IPFS API
+      - "8080:8080"    # IPFS Gateway
+    environment:
+      - IPFS_PROFILE=server
+    networks:
+      - peacebonds-network
+
+  # Forensic Log Watcher
+  forensic-watcher:
+    build:
+      context: .
+      dockerfile: Dockerfile.forensic
+    container_name: peacebonds-forensic-watcher
+    volumes:
+      - ./security/forensics:/app
+      - /var/log/peacebonds:/var/log/peacebonds
+      - /etc/peacebonds:/etc/peacebonds
+    privileged: true  # Required for Tor/VPN activation
+    network_mode: host
+    depends_on:
+      - loki
+
+networks:
+  peacebonds-network:
+    driver: bridge
+
+volumes:
+  prometheus-data:
+  loki-data:
+  grafana-data:
+  ipfs-data:

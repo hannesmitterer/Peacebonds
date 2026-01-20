@@ -1,0 +1,15 @@
+{
+  "tls_version": "TLSv1.3",
+  "cipher_suites": [
+    "TLS_AES_256_GCM_SHA384",
+    "TLS_CHACHA20_POLY1305_SHA256",
+    "TLS_AES_128_GCM_SHA256"
+  ],
+  "allow_unencrypted": false,
+  "quic_enabled": true,
+  "quic_port": 4433,
+  "cert_file": "/etc/peacebonds/certs/server.crt",
+  "key_file": "/etc/peacebonds/certs/server.key",
+  "verify_client": true,
+  "ca_file": "/etc/peacebonds/certs/ca.crt"
+}

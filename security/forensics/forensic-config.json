@@ -1,0 +1,62 @@
+{
+  "log_files": [
+    "/var/log/peacebonds/app.log",
+    "/var/log/peacebonds/access.log",
+    "/var/log/auth.log",
+    "/var/log/syslog"
+  ],
+  "suspicious_patterns": [
+    {
+      "name": "failed_login_attempts",
+      "pattern": "Failed password for .* from (\\d+\\.\\d+\\.\\d+\\.\\d+)",
+      "threshold": 5,
+      "window_seconds": 300,
+      "severity": "high"
+    },
+    {
+      "name": "unauthorized_access",
+      "pattern": "(403|401|Unauthorized|Forbidden)",
+      "threshold": 10,
+      "window_seconds": 60,
+      "severity": "medium"
+    },
+    {
+      "name": "port_scan_detected",
+      "pattern": "(port scan|SYN flood|DDoS)",
+      "threshold": 1,
+      "window_seconds": 10,
+      "severity": "critical"
+    },
+    {
+      "name": "suspicious_ipfs_activity",
+      "pattern": "(IPFS.*error|CID.*not found|gateway.*timeout)",
+      "threshold": 20,
+      "window_seconds": 300,
+      "severity": "medium"
+    },
+    {
+      "name": "blockchain_anomaly",
+      "pattern": "(transaction failed|nonce|gas limit|revert)",
+      "threshold": 15,
+      "window_seconds": 600,
+      "severity": "low"
+    }
+  ],
+  "response_actions": {
+    "tor_enabled": true,
+    "vpn_enabled": true,
+    "tor_priority": true,
+    "rate_limiting": true,
+    "notification_enabled": true
+  },
+  "tor_config": {
+    "socks_port": 9050,
+    "control_port": 9051,
+    "service_name": "tor"
+  },
+  "vpn_config": {
+    "provider": "openvpn",
+    "config_file": "/etc/openvpn/client.conf",
+    "service_name": "openvpn"
+  }
+}
