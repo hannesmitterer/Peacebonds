@@ -46,3 +46,9 @@ temp/
 .coverage_artifacts/
 .coverage_cache/
 .coverage_contracts/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
