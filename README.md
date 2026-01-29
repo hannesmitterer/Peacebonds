@@ -19,3 +19,5 @@
 
 **IPFS GATEWAY:** https://ipfs.io/ipfs/QmEustacioFrameworkGenesis2026Complete
 **UIFS SHARE ID:** EUY-2026-SB-SUSTENANCE
+### 🌐 UIFS UNIVERSAL SHARE LINK
+[ACCESS FRAMEWORK & MAINTENANCE PORTAL](https://gateway.pinata.cloud/ipfs/QmEustacioFrameworkGenesis2026Complete/share?wallet=0x5d61a4B25034393A37ef9307C8Ba3aE99e49944b)
