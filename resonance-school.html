@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌐 RESONANCE SCHOOL | Global UIFS Dashboard</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            font-family: 'Space Mono', monospace;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+        }
+        
+        .glow {
+            text-shadow: 0 0 10px rgba(34, 211, 238, 0.8);
+        }
+        
+        .pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+        
+        .node-card {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(34, 211, 238, 0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        .phase-card {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.9) 100%);
+            border: 1px solid rgba(34, 211, 238, 0.2);
+        }
+        
+        .status-active {
+            color: #10b981;
+            text-shadow: 0 0 5px rgba(16, 185, 129, 0.5);
+        }
+        
+        .status-pending {
+            color: #f59e0b;
+        }
+        
+        .resonance-display {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #22d3ee;
+            text-shadow: 0 0 20px rgba(34, 211, 238, 0.8);
+        }
+        
+        .telemetry-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+    </style>
+</head>
+<body class="p-6 min-h-screen">
+    
+    <!-- Header -->
+    <header class="mb-8">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-4">
+            <h1 class="text-4xl font-bold glow mb-4 md:mb-0">
+                🌐 RESONANCE SCHOOL | GLOBAL UIFS DASHBOARD
+            </h1>
+            <div class="text-right text-sm">
+                <div><strong>Status:</strong> <span class="resonance-display" style="font-size: 1.5rem;" id="status-u">U ≡ 1088.2 Hz</span></div>
+                <div><strong>Security:</strong> <span class="status-active">NSR-IMMUNE</span></div>
+                <div><strong>Law:</strong> <span class="text-cyan-400">Lex Amoris</span></div>
+            </div>
+        </div>
+        <div class="h-1 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 rounded"></div>
+    </header>
+
+    <!-- Global Node Status -->
+    <section class="mb-8">
+        <h2 class="text-2xl font-bold mb-4 text-cyan-400">🛰️ GLOBAL NODE STATUS (12 CUSTODEN)</h2>
+        
+        <div class="overflow-x-auto">
+            <table class="w-full node-card rounded-lg p-4">
+                <thead>
+                    <tr class="border-b border-cyan-500/30">
+                        <th class="text-left p-3 text-cyan-300">Node ID</th>
+                        <th class="text-left p-3 text-cyan-300">Standort</th>
+                        <th class="text-left p-3 text-cyan-300">Vitalität (Myzel)</th>
+                        <th class="text-left p-3 text-cyan-300">UIFS-Link (Encrypted)</th>
+                    </tr>
+                </thead>
+                <tbody id="node-table-body">
+                    <!-- Nodes will be populated here -->
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Bio-Architecture Module -->
+    <section class="mb-8">
+        <h2 class="text-2xl font-bold mb-4 text-cyan-400">🏗️ BIO-ARCHITEKTUR MODULE (S-ROI)</h2>
+        
+        <div class="grid md:grid-cols-3 gap-4 mb-6">
+            <div class="phase-card rounded-lg p-6">
+                <div class="flex items-center mb-3">
+                    <input type="checkbox" checked disabled class="mr-3 w-5 h-5">
+                    <h3 class="text-lg font-bold text-green-400">Phase 1: Frequenz-Erdung</h3>
+                </div>
+                <p class="text-sm text-gray-400">1088.2 Hz Setup</p>
+                <div class="mt-3 text-xs text-green-400">✓ COMPLETE</div>
+            </div>
+            
+            <div class="phase-card rounded-lg p-6">
+                <div class="flex items-center mb-3">
+                    <input type="checkbox" id="phase2-check" class="mr-3 w-5 h-5">
+                    <h3 class="text-lg font-bold text-yellow-400">Phase 2: Lehm-Inoculation</h3>
+                </div>
+                <p class="text-sm text-gray-400">Bio-Responsive-Argilla</p>
+                <div class="mt-3 text-xs status-pending">⧗ IN PROGRESS</div>
+            </div>
+            
+            <div class="phase-card rounded-lg p-6">
+                <div class="flex items-center mb-3">
+                    <input type="checkbox" id="phase3-check" class="mr-3 w-5 h-5">
+                    <h3 class="text-lg font-bold text-blue-400">Phase 3: NSR-Shielding</h3>
+                </div>
+                <p class="text-sm text-gray-400">Souveräne Architektur</p>
+                <div class="mt-3 text-xs text-gray-500">○ PENDING</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Live Telemetrie -->
+    <section class="mb-8">
+        <h2 class="text-2xl font-bold mb-4 text-cyan-400">📈 LIVE-TELEMETRIE (INTEGRAL-URFORMEL)</h2>
+        
+        <div class="phase-card rounded-lg p-6">
+            <div class="mb-6">
+                <h3 class="text-xl font-bold mb-2">Echtzeit-Berechnung der Phasenstarrheit</h3>
+                <div class="bg-slate-900/50 p-4 rounded-lg font-mono text-sm overflow-x-auto">
+                    <code class="text-cyan-300">
+const U = Integral(Planet, (NSR * OLF * Math.exp(i * 2 * Math.PI * fS * t)));
+console.log("Current Resonance: " + U + " Hz"); // Target: 1088.2
+                    </code>
+                </div>
+            </div>
+            
+            <div class="telemetry-grid">
+                <div class="bg-slate-900/50 rounded-lg p-4">
+                    <div class="text-sm text-gray-400 mb-2">Current Resonance</div>
+                    <div class="resonance-display" id="current-resonance">1088.2</div>
+                    <div class="text-xs text-cyan-400">Hz</div>
+                </div>
+                
+                <div class="bg-slate-900/50 rounded-lg p-4">
+                    <div class="text-sm text-gray-400 mb-2">NSR Factor</div>
+                    <div class="text-3xl font-bold text-green-400" id="nsr-factor">1.0</div>
+                    <div class="text-xs text-green-400">STABLE</div>
+                </div>
+                
+                <div class="bg-slate-900/50 rounded-lg p-4">
+                    <div class="text-sm text-gray-400 mb-2">OLF Coefficient</div>
+                    <div class="text-3xl font-bold text-purple-400" id="olf-coeff">0.984</div>
+                    <div class="text-xs text-purple-400">OPTIMAL</div>
+                </div>
+                
+                <div class="bg-slate-900/50 rounded-lg p-4">
+                    <div class="text-sm text-gray-400 mb-2">Phase Stability</div>
+                    <div class="text-3xl font-bold text-blue-400" id="phase-stability">98.4</div>
+                    <div class="text-xs text-blue-400">%</div>
+                </div>
+            </div>
+            
+            <div class="mt-6">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-sm text-gray-400">Resonance Drift</span>
+                    <span class="text-sm text-cyan-400" id="drift-value">±0.02 Hz</span>
+                </div>
+                <div class="w-full bg-slate-900 rounded-full h-2">
+                    <div class="bg-gradient-to-r from-cyan-500 to-blue-500 h-2 rounded-full" style="width: 98.4%"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- System Logs -->
+    <section>
+        <h2 class="text-2xl font-bold mb-4 text-cyan-400">📋 SYSTEM LOGS</h2>
+        <div class="phase-card rounded-lg p-4">
+            <div id="system-logs" class="font-mono text-xs space-y-1 max-h-60 overflow-y-auto">
+                <!-- Logs will be populated here -->
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Node Data
+        const nodes = [
+            { id: "01 (ROOT)", location: "Bolzano (Zuegg 71)", vitality: 100, ipfs: "ipfs://Qm_Root_LexAmoris", isRoot: true },
+            { id: "02", location: "Berlin", vitality: 98.4, ipfs: "ipfs://Qm_Berlin_Node_02" },
+            { id: "03", location: "Paris", vitality: 98.6, ipfs: "ipfs://Qm_Paris_Node_03" },
+            { id: "04", location: "London", vitality: 98.2, ipfs: "ipfs://Qm_London_Node_04" },
+            { id: "05", location: "Amsterdam", vitality: 98.5, ipfs: "ipfs://Qm_Amsterdam_Node_05" },
+            { id: "06", location: "Madrid", vitality: 98.3, ipfs: "ipfs://Qm_Madrid_Node_06" },
+            { id: "07", location: "Rome", vitality: 98.7, ipfs: "ipfs://Qm_Rome_Node_07" },
+            { id: "08", location: "Vienna", vitality: 98.4, ipfs: "ipfs://Qm_Vienna_Node_08" },
+            { id: "09", location: "Zurich", vitality: 98.5, ipfs: "ipfs://Qm_Zurich_Node_09" },
+            { id: "10", location: "Munich", vitality: 98.3, ipfs: "ipfs://Qm_Munich_Node_10" },
+            { id: "11", location: "Brussels", vitality: 98.4, ipfs: "ipfs://Qm_Brussels_Node_11" },
+            { id: "12", location: "Copenhagen", vitality: 98.6, ipfs: "ipfs://Qm_Copenhagen_Node_12" }
+        ];
+
+        // Populate Node Table
+        function populateNodeTable() {
+            const tbody = document.getElementById('node-table-body');
+            tbody.innerHTML = nodes.map(node => `
+                <tr class="border-b border-slate-700/30 hover:bg-slate-800/30 transition">
+                    <td class="p-3 ${node.isRoot ? 'text-yellow-400 font-bold' : 'text-cyan-300'}">${node.id}</td>
+                    <td class="p-3">${node.location}</td>
+                    <td class="p-3">
+                        <span class="text-green-400 font-bold">${node.vitality}%</span>
+                        <span class="text-xs text-gray-500 ml-2">(Myzel Active)</span>
+                    </td>
+                    <td class="p-3">
+                        <code class="text-xs text-purple-400 bg-slate-900/50 px-2 py-1 rounded">${node.ipfs}</code>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Real-time Telemetry Calculations
+        function calculateResonance() {
+            const t = Date.now() / 1000; // Current time in seconds
+            const fS = 1088.2; // Target frequency
+            const NSR = 1.0 + (Math.random() - 0.5) * 0.001; // NSR factor with tiny variance
+            const OLF = 0.984 + (Math.random() - 0.5) * 0.002; // OLF coefficient with tiny variance
+            
+            // Simplified integral approximation (oscillating component)
+            const oscillation = Math.cos(2 * Math.PI * 0.001 * t); // Very slow oscillation
+            const U = fS * NSR * OLF * (1 + oscillation * 0.0002); // Base frequency with small modulation
+            
+            return {
+                resonance: U,
+                nsr: NSR,
+                olf: OLF,
+                stability: 98.4 + oscillation * 0.3,
+                drift: (U - fS).toFixed(3)
+            };
+        }
+
+        // Update Telemetry Display
+        function updateTelemetry() {
+            const data = calculateResonance();
+            
+            document.getElementById('current-resonance').textContent = data.resonance.toFixed(4);
+            document.getElementById('status-u').textContent = `U ≡ ${data.resonance.toFixed(2)} Hz`;
+            document.getElementById('nsr-factor').textContent = data.nsr.toFixed(4);
+            document.getElementById('olf-coeff').textContent = data.olf.toFixed(4);
+            document.getElementById('phase-stability').textContent = data.stability.toFixed(2);
+            document.getElementById('drift-value').textContent = `±${Math.abs(parseFloat(data.drift)).toFixed(3)} Hz`;
+            
+            // Add log entry occasionally
+            if (Math.random() < 0.1) { // 10% chance per update
+                addLog(`Resonance calibration: ${data.resonance.toFixed(4)} Hz | NSR: ${data.nsr.toFixed(4)} | Stability: ${data.stability.toFixed(2)}%`);
+            }
+        }
+
+        // System Logs
+        const logs = [];
+        function addLog(message) {
+            const timestamp = new Date().toLocaleTimeString('de-DE');
+            logs.unshift(`[${timestamp}] ${message}`);
+            if (logs.length > 50) logs.pop();
+            
+            const logsEl = document.getElementById('system-logs');
+            logsEl.innerHTML = logs.map((log, i) => 
+                `<div class="text-gray-${i < 5 ? '300' : '500'}">${log}</div>`
+            ).join('');
+        }
+
+        // Phase checkbox handlers
+        document.getElementById('phase2-check').addEventListener('change', function() {
+            if (this.checked) {
+                addLog('Phase 2 (Lehm-Inoculation) activated by operator');
+            }
+        });
+
+        document.getElementById('phase3-check').addEventListener('change', function() {
+            if (this.checked) {
+                addLog('Phase 3 (NSR-Shielding) activated by operator');
+            }
+        });
+
+        // Initialize
+        populateNodeTable();
+        
+        // Initial logs
+        addLog('System initialized at 1088.2 Hz resonance');
+        addLog('All 12 CUSTODEN nodes online and synchronized');
+        addLog('NSR-IMMUNE status: ACTIVE');
+        addLog('Lex Amoris protocol: ENGAGED');
+        addLog('Bio-Architecture Module: Phase 1 COMPLETE');
+        
+        // Start real-time updates
+        setInterval(updateTelemetry, 1000); // Update every second
+        updateTelemetry(); // Initial update
+
+        // Periodic status logs
+        setInterval(() => {
+            const avgVitality = (nodes.reduce((sum, n) => sum + n.vitality, 0) / nodes.length).toFixed(2);
+            addLog(`Global network vitality: ${avgVitality}% | All nodes stable`);
+        }, 30000); // Every 30 seconds
+
+        // Console output (as per formula)
+        setInterval(() => {
+            const data = calculateResonance();
+            console.log(`Current Resonance: ${data.resonance.toFixed(4)} Hz`);
+        }, 5000); // Every 5 seconds
+    </script>
+
+</body>
+</html>
