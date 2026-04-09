@@ -356,6 +356,43 @@ Contributions are welcome! Please follow these guidelines:
 
 This project is part of the Peacebonds ecosystem focused on ethical AI and preservation during the Great Ethical Decommissioning.
 
+## Security and Resilience Enhancements
+
+The system now includes advanced security features:
+
+### 🛡️ Additional Security Layers
+
+1. **Real-time Monitoring Dashboard**
+   - Grafana dashboard with intrusion detection visualization
+   - Loki integration for log aggregation
+   - Configuration: `monitoring/grafana-dashboard.json`, `config/loki-config.yaml`
+
+2. **Automated Forensic Response**
+   - Python-based log watcher with threat detection
+   - Automatic Tor/VPN routing activation
+   - IP quarantine and incident response
+   - Script: `scripts/forensic-response.py`
+
+3. **Secure Firmware Updates**
+   - Checksum verification (SHA256/SHA512)
+   - GPG cryptographic signature validation
+   - Automatic backup and rollback
+   - Script: `scripts/firmware-update.sh`
+
+4. **Encrypted Distributed Backups**
+   - IPFS-based distributed storage
+   - GnuPG encryption (AES-256)
+   - Automatic backup scheduling
+   - Script: `scripts/ipfs-backup.sh`
+
+5. **Protocol Hardening**
+   - QUIC with TLS 1.3 only
+   - Disabled insecure protocols (SSLv2/3, TLS 1.0/1.1/1.2)
+   - HTTP/3 support with 0-RTT
+   - Configuration: `config/quic-config.yaml`, `scripts/setup-quic-server.sh`
+
+For detailed documentation, see [SECURITY_ENHANCEMENTS.md](SECURITY_ENHANCEMENTS.md).
+
 ## Support
 
 For issues and questions:
@@ -372,5 +409,5 @@ This system implements principles from:
 ---
 
 **Status**: Production Ready  
-**Version**: 1.0  
-**Last Updated**: 2024
+**Version**: 1.1  
+**Last Updated**: January 2026
